@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 // Producto Model
-const Product = require('../models/product');
+const Product = require('../model/product');
 
 // OBTENER UN SOLO producto
 router.get('/:id', async (req, res) => {

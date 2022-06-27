@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 
 // Review Model
-const Review = require('../models/review');
+const Review = require('../model/review');
 
 // OBTENER TODAS las reseñas
 router.get('/', async (req, res) => {
