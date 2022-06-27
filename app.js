@@ -17,6 +17,7 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
+// MW
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -33,8 +34,11 @@ mongoose.connect(URI, {useNewUrlParser: true, dbName: "Easy"})
   .then(db => console.log('BD Conectada'))
   .catch(error => console.error(error));
 
+// Routes
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/reviews', require('./routes/reviews'));
+app.use('/products', require('./routes/products'));
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
