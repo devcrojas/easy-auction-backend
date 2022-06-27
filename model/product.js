@@ -21,14 +21,7 @@ const Product = new Schema({
         initialD: { type: Date, required: false }, /* True: Fehca de inicio al autorizar subasta */
         final: { type: Date, required: false }
     }},
-    images: { type: {
-        img1: { type: String, required: true },
-        img2: { type: String, required: false },
-        img3: { type: String, required: false },
-        img4: { type: String, required: false },
-        img5: { type: String, required: false },
-        img6: { type: String, required: false }
-    }}
+    image: { data: Buffer, contentType: String }
 });
 
 module.exports = mongoose.model('Product', Product);

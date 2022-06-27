@@ -17,23 +17,19 @@ router.get('/', async (req, res) => {
 });
 
 // AGREGAR un nuevo producto
-router.post('/', async (req, res) => {
-  const {
-    nameProduct, category,
-    description, material, marca, dimensions, actualCondition, observations,
-    status,
-    price, initialP, buyNow, offered,
-    auctionDate, initialD, final,
-    images, img1, img2, img3, img4, img5,img6
-  } = req.body;
-  const addProducts = new Product(
-    {
-      nameProduct, category, description, material, marca, dimensions,
-      actualCondition, observations, status, price, initialP, buyNow,
-      offered, auctionDate, initialD, final, images, img1, img2,
-      img3, img4, img5, img6
+router.post('/', image.upload, async (req, res) => {
+
+  var obj = { nameProduct:req.body.nameProduct, category:req.body.category,
+    description:{ material:req.body.material, marca:req.body.marca, dimensions:req.body.dimensions, actualCondition:req.body.actualCondition, observations:req.body.observations },
+    status:req.body.status,
+    price:{ initialP:req.body.initialP, buyNow:req.body.buyNow, offered:req.body.offered },
+    auctionDate:{ initialD:req.body.initialD, final:req.body.final },
+    image:{
+      data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
+      contentType: 'image/png'
     }
-  );
+  }
+  const addProducts = new Product(obj);
   await addProducts.save();
   res.json({status: 1, mssg: 'Product Saved'});
 });
@@ -41,20 +37,17 @@ router.post('/', async (req, res) => {
 
 // ACTUALIZAR a nuevo producto
 router.put('/:id', async (req, res) => {
-  const {
-    nameProduct, category,
-    description, material, marca, dimensions, actualCondition, observations,
-    status,
-    price, initialP, buyNow, offered,
-    auctionDate, initialD, final,
-    images, img1, img2, img3, img4, img5,img6
-  } = req.body;
-  const newProduct = {
-    nameProduct, category, description, material, marca, dimensions,
-    actualCondition, observations, status, price, initialP, buyNow,
-    offered, auctionDate, initialD, final, images, img1, img2,
-    img3, img4, img5, img6
-  };
+  var obj = { nameProduct:req.body.nameProduct, category:req.body.category,
+    description:{ material:req.body.material, marca:req.body.marca, dimensions:req.body.dimensions, actualCondition:req.body.actualCondition, observations:req.body.observations },
+    status:req.body.status,
+    price:{ initialP:req.body.initialP, buyNow:req.body.buyNow, offered:req.body.offered },
+    auctionDate:{ initialD:req.body.initialD, final:req.body.final },
+    image:{
+      data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
+      contentType: 'image/png'
+    }
+  }
+  const newProduct = obj;
   await Product.findByIdAndUpdate(req.params.id, newProduct);
   res.json({status: 1, mssg: 'Product Updated'});
   /* if (Product.findByIdAndUpdate(req.params.id, newProduct) == true)

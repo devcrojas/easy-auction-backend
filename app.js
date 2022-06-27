@@ -56,6 +56,9 @@ app.use(function (err, req, res, next) {
   res.render('error');
 });
 
+// Imagenes estaticas
+app.use("/uploads", express.static('uploads'))
+
 app.listen(8080, () => {
   console.log("Server running in port 8080");
 });
