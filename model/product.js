@@ -13,15 +13,16 @@ const Product = new Schema({
     }},
     status: { type: String, required: false },
     price: { type: {
-        initialP: { type: Number, required: true },
-        buyNow: { type: Number, required: true },
+        initialP: { type: Number, required: false },
+        buyNow: { type: Number, required: false },
         offered: { type: Number, required: false }
     }},
     auctionDate: { type: {
         initialD: { type: Date, required: false }, /* True: Fehca de inicio al autorizar subasta */
         final: { type: Date, required: false }
     }},
-    image: { data: Buffer, contentType: String }
-});
+    files: [Object]
+},
+{ versionKey: false });
 
 module.exports = mongoose.model('Product', Product);
