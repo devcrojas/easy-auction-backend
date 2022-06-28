@@ -4,7 +4,7 @@ const router = express.Router();
 // Producto Model
 const Product = require('../model/product');
 // Service Multer
-const multer = require('../service/multer')
+const multer = require('../middleware/multer')
 
 
 // OBTENER UN SOLO producto
