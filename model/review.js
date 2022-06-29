@@ -7,7 +7,8 @@ const Review = new Schema({
     type: { type: String, required: true },
     stars: { type: Number, required: true },
     user: { type: String, default: 'Anónimo', required: false}
-});
+},
+{ versionKey: false });
 
 module.exports = mongoose.model('Review', Review);
 /* FIN */
