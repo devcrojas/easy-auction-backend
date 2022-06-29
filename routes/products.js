@@ -73,7 +73,7 @@ router.put('/:id', multer.upload.array('files', 6), async (req, res, next) => {
       auctionDate:{ initialD:req.body.initialD, final:req.body.final },
       files: filesArray
     };
-    await updateProducts.save();
+    await Product.findByIdAndUpdate(req.params.id, updateProducts);
     res.status(201).send('Successfully Upgraded Products!');
   }catch(error) {
     res.status(400).send(error.message);
