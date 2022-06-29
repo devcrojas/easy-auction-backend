@@ -13,16 +13,16 @@ router.get('/', async (req, res) => {
 
 // AGREGAR reseña
 router.post('/', async (req, res) => {
-    const { comment, type, stars } = req.body;
-    const addReviews = new Review({comment, type, stars});
+  const { seller, comment, type, stars, user } = req.body;
+  const addReviews = new Review({seller, comment, type, stars, user});
     await addReviews.save();
     res.json({status: 1, mssg: 'Published Review'});
   });
 
   // ACTUALIZAR una nueva reseña 
 router.put('/:id', async (req, res) => {
-  const { comment, type, stars } = req.body;
-  const newReviews = {comment, type, stars};
+  const { seller, comment, type, stars, user } = req.body;
+  const newReviews = {seller, comment, type, stars, user};
   await Review.findByIdAndUpdate(req.params.id, newReviews);
   res.json({status: 1, mssg: 'Review Updated'});
   /* if (Product.findByIdAndUpdate(req.params.id, newProduct) == true)
