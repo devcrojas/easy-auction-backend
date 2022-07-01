@@ -65,7 +65,7 @@ router.put('/:id', multer.upload.array('files', 6), async (req, res, next) => {
         }
         filesArray.push(file);
     });
-    const updateProducts = {
+    const updateProduct = {
       nameProduct:req.body.nameProduct, category:req.body.category,
       description:{ material:req.body.material, marca:req.body.marca, dimensions:req.body.dimensions, actualCondition:req.body.actualCondition, observations:req.body.observations },
       status:req.body.status,
@@ -73,7 +73,7 @@ router.put('/:id', multer.upload.array('files', 6), async (req, res, next) => {
       auctionDate:{ initialD:req.body.initialD, final:req.body.final },
       files: filesArray
     };
-    await Product.findByIdAndUpdate(req.params.id, updateProducts);
+    await Product.findByIdAndUpdate(req.params.id, updateProduct);
     res.status(201).send('Successfully Upgraded Products!');
   }catch(error) {
     res.status(400).send(error.message);
