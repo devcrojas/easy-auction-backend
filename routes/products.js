@@ -6,6 +6,9 @@ const Product = require('../model/product');
 // Service Multer
 const multer = require('../middleware/multer')
 
+// Fields
+const fields = multer.upload.fields([{ name: 'file', maxCount: 1 }, { name: 'files', maxCount: 6 }])
+
 
 // OBTENER UN SOLO producto
 router.get('/:id', async (req, res) => {
@@ -24,17 +27,17 @@ router.get('/', async (req, res) => {
 });
 
 // AGREGAR un nuevo producto
-router.post('/', multer.upload.array('files', 6), async (req, res, next) => {
+router.post('/', fields, async (req, res, next) => {
   try{
     let filesArray = [];
-    req.files.forEach(element => {
-        const file = {
+    req.files['files'].forEach(element => {
+        const image = {
             fileName: element.originalname,
             filePath: element.path,
             fileType: element.mimetype,
             fileSize: fileSizeFormatter(element.size, 2)
         }
-        filesArray.push(file);
+        filesArray.push(image);
     });
     const addProducts = new Product({
       nameProduct:req.body.nameProduct, category:req.body.category,
@@ -42,6 +45,12 @@ router.post('/', multer.upload.array('files', 6), async (req, res, next) => {
       status:req.body.status,
       price:{ initialP:req.body.initialP, buyNow:req.body.buyNow, offered:req.body.offered },
       auctionDate:{ initialD:req.body.initialD, final:req.body.final },
+      file:{
+        fileName: req.files['file'][0].originalname,
+        filePath: req.files['file'][0].path,
+        fileType: req.files['file'][0].mimetype,
+        fileSize: fileSizeFormatter(req.files['file'][0].size, 2) // 0.00
+      },
       files: filesArray
     });
     await addProducts.save();
@@ -53,17 +62,17 @@ router.post('/', multer.upload.array('files', 6), async (req, res, next) => {
 
 
 // ACTUALIZAR a nuevo producto
-router.put('/:id', multer.upload.array('files', 6), async (req, res, next) => {
+router.put('/:id', fields, async (req, res, next) => {
   try{
     let filesArray = [];
-    req.files.forEach(element => {
-        const file = {
+    req.files['files'].forEach(element => {
+        const images = {
             fileName: element.originalname,
             filePath: element.path,
             fileType: element.mimetype,
             fileSize: fileSizeFormatter(element.size, 2)
         }
-        filesArray.push(file);
+        filesArray.push(images);
     });
     const updateProduct = {
       nameProduct:req.body.nameProduct, category:req.body.category,
@@ -71,6 +80,12 @@ router.put('/:id', multer.upload.array('files', 6), async (req, res, next) => {
       status:req.body.status,
       price:{ initialP:req.body.initialP, buyNow:req.body.buyNow, offered:req.body.offered },
       auctionDate:{ initialD:req.body.initialD, final:req.body.final },
+      file:{
+        fileName: req.files['file'][0].originalname,
+        filePath: req.files['file'][0].path,
+        fileType: req.files['file'][0].mimetype,
+        fileSize: fileSizeFormatter(req.files['file'][0].size, 2) // 0.00
+      },
       files: filesArray
     };
     await Product.findByIdAndUpdate(req.params.id, updateProduct);

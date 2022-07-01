@@ -21,6 +21,24 @@ const Product = new Schema({
         initialD: { type: Date, required: false }, /* True: Fehca de inicio al autorizar subasta */
         final: { type: Date, required: false }
     }},
+    file: {
+        fileName: {
+            type: String,
+            required: true
+        },
+        filePath: {
+            type: String,
+            required: true
+        },
+        fileType: {
+            type: String,
+            required: true
+        },
+        fileSize: {
+            type: String,
+            required: true
+        }
+    },
     files: [Object]
 },
 { versionKey: false });
