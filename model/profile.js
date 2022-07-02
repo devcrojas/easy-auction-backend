@@ -1,9 +1,7 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-const noUserImage = "uploads\\noUserImage.jpg";
-const name =  "noUserImage.jpg";
-const tipo = "image/jpeg";
+
 const size = "8.36 KB";
 
 const Profile = new Schema({
@@ -11,8 +9,14 @@ const Profile = new Schema({
     firstName: { type: String, require: true },
     lastName: {type: String, require: true},
     birthday: {type: Date, require: false},
-    address: {type: String, require: true},
-    phone: {type: String, require: true},
+    address: {
+        cpp: { type: String, require: true },
+        stree: { type: String, require: false },
+        suburb: { type: String, require: false },
+        municipaly: { type: String, require: false },
+        state: { type: String, require: true }
+        },
+    phone: { type: String, require: false },
     email: { type: String, required: false },
     password: { type: String, required: false},
     bankAccount: { type:{
@@ -25,22 +29,18 @@ const Profile = new Schema({
     file: {
         fileName: {
             type: String,
-            default: name,
             required: false
         },
         filePath: {
             type: String,
-            default: noUserImage,
             required: false
         },
         fileType: {
             type: String,
-            default: tipo,
             required: false
         },
         fileSize: {
             type: String,
-            default: size,
             required: false
         }
     }
