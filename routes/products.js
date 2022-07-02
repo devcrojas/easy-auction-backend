@@ -3,6 +3,7 @@ const router = express.Router();
 
 // Producto Model
 const Product = require('../model/product');
+const Profile = require('../model/profile');
 // Service Multer
 const multer = require('../middleware/multer')
 
@@ -39,6 +40,10 @@ router.post('/', fields, async (req, res, next) => {
         }
         filesArray.push(image);
     });
+
+    //Se relaciona el email con la bd de profile y encuentra la coincidencia
+    let sellerObject = await Profile.aggregate([{ $match: { email: req.body.email } }]);
+
     const addProducts = new Product({
       nameProduct:req.body.nameProduct, category:req.body.category,
       description:{ material:req.body.material, marca:req.body.marca, dimensions:req.body.dimensions, actualCondition:req.body.actualCondition, observations:req.body.observations },
@@ -51,7 +56,9 @@ router.post('/', fields, async (req, res, next) => {
         fileType: req.files['file'][0].mimetype,
         fileSize: fileSizeFormatter(req.files['file'][0].size, 2) // 0.00
       },
-      files: filesArray
+      files: filesArray,
+      email: req.body.email,
+      sellerData: sellerObject
     });
     await addProducts.save();
     res.status(201).send('Products Successfully Added!');
@@ -74,6 +81,9 @@ router.put('/:id', fields, async (req, res, next) => {
         }
         filesArray.push(images);
     });
+    //Se relaciona el email con la bd de profile y encuentra la coincidencia
+    let sellerObject = await Profile.aggregate([{ $match: { email: req.body.email } }]);
+
     const updateProduct = {
       nameProduct:req.body.nameProduct, category:req.body.category,
       description:{ material:req.body.material, marca:req.body.marca, dimensions:req.body.dimensions, actualCondition:req.body.actualCondition, observations:req.body.observations },
@@ -86,7 +96,9 @@ router.put('/:id', fields, async (req, res, next) => {
         fileType: req.files['file'][0].mimetype,
         fileSize: fileSizeFormatter(req.files['file'][0].size, 2) // 0.00
       },
-      files: filesArray
+      files: filesArray,
+      email: req.body.email,
+      sellerData: sellerObject
     };
     await Product.findByIdAndUpdate(req.params.id, updateProduct);
     res.status(201).send('Successfully Upgraded Products!');
