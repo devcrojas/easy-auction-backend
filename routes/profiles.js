@@ -4,6 +4,7 @@ const router = express.Router();
 
 // Profile Model
 const Profile = require('../model/profile');
+const Login = require('../model/login');
 // Service Multer
 const multer = require('../middleware/multer')
 
@@ -14,7 +15,7 @@ router.get('/:id', async (req, res) => {
     const getProfile = await Profile.findById(req.params.id);
     res.status(200).send(getProfile);
   } catch (error) {
-    res.status(400).send(error.message);
+    res.status(400).send('Perfil aun no creado');
   }
 });
 
@@ -22,6 +23,7 @@ router.get('/:id', async (req, res) => {
 router.get('/', async (req, res) => {
   try{
     const getProfiles = await Profile.find();
+    
     res.status(200).send(getProfiles);
   }catch(error) {
     res.status(400).send(error.message);
@@ -32,6 +34,7 @@ router.get('/', async (req, res) => {
 router.post('/', multer.upload.single('file'), async (req, res, next) => {
   try{
     const profile = {
+      _id:req.body.email,
       firstName:req.body.firstName,
       lastName:req.body.lastName,
       birthday:req.body.birthday,
@@ -45,12 +48,6 @@ router.post('/', multer.upload.single('file'), async (req, res, next) => {
       phone:req.body.phone,
       email:req.body.email,
       password:req.body.password,
-      bankAccount:{
-        cardNumber:req.body.cardNumber,
-        expiration:req.body.expiration,
-        cvv:req.body.cvv
-      },
-      emailPaypal:req.body.emailPaypal,
       status:req.body.status
     };
 
@@ -90,6 +87,7 @@ router.post('/', multer.upload.single('file'), async (req, res, next) => {
 router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
   try{
     const updateProfile = {
+      _id:req.body.email,
       firstName:req.body.firstName,
       lastName:req.body.lastName,
       birthday:req.body.birthday,
@@ -103,12 +101,6 @@ router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
       phone:req.body.phone,
       email:req.body.email,
       password:req.body.password,
-      bankAccount:{
-        cardNumber:req.body.cardNumber,
-        expiration:req.body.expiration,
-        cvv:req.body.cvv
-      },
-      emailPaypal:req.body.emailPaypal,
       status:req.body.status
     };
     if (typeof req.file === "undefined") {

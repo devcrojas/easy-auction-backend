@@ -1,11 +1,8 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-
-const size = "8.36 KB";
-
 const Profile = new Schema({
-    
+    _id: { type: String, require: true },
     firstName: { type: String, require: true },
     lastName: {type: String, require: true},
     birthday: {type: Date, require: false},
@@ -19,12 +16,6 @@ const Profile = new Schema({
     phone: { type: String, require: false },
     email: { type: String, required: false },
     password: { type: String, required: false},
-    bankAccount: { type:{
-        cardNumber: { type: Number, require: false },
-        expiration: { type: String, require: false },
-        cvv: { type: Number, require: false }
-    }},
-    emailPaypal: { type: String, required: false },
     status: { type: String, default:'Active', required: false },
     file: {
         fileName: {
