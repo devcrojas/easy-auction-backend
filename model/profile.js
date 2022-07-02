@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
+const noUserImage = "uploads\\noUserImage.jpg";
+const name =  "noUserImage.jpg";
+const tipo = "image/jpeg";
+const size = "8.36 KB";
+
 const Profile = new Schema({
     
     firstName: { type: String, require: true },
@@ -20,19 +25,23 @@ const Profile = new Schema({
     file: {
         fileName: {
             type: String,
-            required: true
+            default: name,
+            required: false
         },
         filePath: {
             type: String,
-            required: true
+            default: noUserImage,
+            required: false
         },
         fileType: {
             type: String,
-            required: true
+            default: tipo,
+            required: false
         },
         fileSize: {
             type: String,
-            required: true
+            default: size,
+            required: false
         }
     }
 },
