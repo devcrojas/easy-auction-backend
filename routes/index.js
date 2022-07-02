@@ -1,24 +1,25 @@
 var express = require('express');
 var router = express.Router();
 const Login = require('../model/login');
+const Profile = require('../model/profile')
 const jwt = require('jsonwebtoken');
 
 validateSession = () => {
   return (req, res, next) => {
-      const authHeader = req.headers.authorization;
-      if (authHeader) {
-          const token = authHeader.split(' ')[1];
-          jwt.verify(token, process.env.TOKEN_SECRET, (err, user) => {
-              if (err) {
-                  return res.sendStatus(403);
-              }
-              //console.log(user);
-              req.user = user;
-              next();
-          });
-      } else {
-          res.sendStatus(401);
-      }
+    const authHeader = req.headers.authorization;
+    if (authHeader) {
+      const token = authHeader.split(' ')[1];
+      jwt.verify(token, process.env.TOKEN_SECRET, (err, user) => {
+        if (err) {
+          return res.sendStatus(403);
+        }
+        //console.log(user);
+        req.user = user;
+        next();
+      });
+    } else {
+      res.sendStatus(401);
+    }
   };
 }
 /* register */
@@ -49,20 +50,22 @@ router.post("/login", async function (req, res, next) {
     if (req.body.email !== "" && req.body.pass !== "") {
       //Validar a la base de datos el usuario y la contraseña
       let login = await Login.aggregate([{ $match: { email: req.body.email, password: req.body.pass } }]);
-      // console.log(login);
       /*/if (req.body.user == "crojas" && req.body.pass == "26394")
         res.json({ status: 1, mssg: "Login Exitoso!" });
       else
         res.json({ status: -1, mssg: "Login Fallido!" });/*/
 
       if (login.length > 0) {
-        console.log(login);
+        let profile = await Profile.aggregate([{ $match: { _id: req.body.email } }]);
+        console.log("consulta de perfil", profile);
+        //console.log(login);
 
         // create token
         const token = jwt.sign({
           name: login[0].name,
           id: login[0]._id,
-          date: new Date()
+          date: new Date(),
+          profile: profile
         }, process.env.TOKEN_SECRET)
 
         res.header('auth-token', token).json({
@@ -83,7 +86,7 @@ router.post("/login", async function (req, res, next) {
 });
 
 router.get('/books', validateSession(), (req, res) => {
-  res.json({author: "1"});
+  res.json({ author: "1" });
 });
 
 module
