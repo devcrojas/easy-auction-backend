@@ -39,7 +39,9 @@ const Product = new Schema({
             required: true
         }
     },
-    files: [Object]
+    files: [Object],
+    email: { type: String, required: true },
+    sellerData: [Object]
 },
 { versionKey: false });
 
