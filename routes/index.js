@@ -25,7 +25,7 @@ validateSession = () => {
 router.post('/user/register', function (req, res, next) {
   //.......Algoritmo
   //res.send("Respuesta del algorimo")
-  let insert = { _id: req.body.email, name: req.body.name, firstName: req.body.firstname, email: req.body.email, password: req.body.password, isAdmin: false }
+  let insert = { _id: req.body.email, name: req.body.name, firstName: req.body.firstname, email: req.body.email, password: req.body.password, isAdmin: true }
   var model = new Login(insert);
   model.save(function (err) {
     if (err) return console.log(err);
