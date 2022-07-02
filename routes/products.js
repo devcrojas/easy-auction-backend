@@ -134,4 +134,4 @@ const fileSizeFormatter = (bytes, decimal) => {
 
 module.exports = router;
 
-/* FIN 1.0 */
+/* FIN 1.1 */

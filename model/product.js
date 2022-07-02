@@ -47,4 +47,4 @@ const Product = new Schema({
 
 module.exports = mongoose.model('Product', Product);
 
-/* FIN */
+/* FIN 1.0 */
