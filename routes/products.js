@@ -51,7 +51,29 @@ router.post('/', fields, async (req, res, next) => {
         fileSize: fileSizeFormatter(req.files['file'][0].size, 2) // 0.00
       },
       email: req.body.email,
-      sellerData: sellerObject
+      sellerData: {
+        _id:sellerObject[0].email,
+        firstName:sellerObject[0].firstName,
+        lastName:sellerObject[0].lastName,
+        birthday:sellerObject[0].birthday,
+        address:{
+          cpp: sellerObject[0].address.cpp,
+          stree: sellerObject[0].address.stree,
+          suburb: sellerObject[0].address.suburb,
+          municipaly: sellerObject[0].address.municipaly,
+          state: sellerObject[0].address.state,
+        },
+        phone:sellerObject[0].phone,
+        email:sellerObject[0].email,
+        password:sellerObject[0].password,
+        status:sellerObject[0].status,
+        file:{
+          fileName: sellerObject[0].file.fileName,
+          filePath: sellerObject[0].file.filePath,
+          fileType: sellerObject[0].file.fileType,
+          fileSize: sellerObject[0].file.fileSize
+        }
+      }
     };
     if(req.files['files']) {
       req.files['files'].forEach(element => {

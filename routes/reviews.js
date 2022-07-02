@@ -4,7 +4,7 @@ const router = express.Router();
 
 // Review Model
 const Review = require('../model/review');
-
+const Profile = require('../model/profile');
 // OBTENER TODAS las reseñas
 router.get('/', async (req, res) => {
   const getReviews = await Review.find();
@@ -13,11 +13,24 @@ router.get('/', async (req, res) => {
 
 // AGREGAR reseña
 router.post('/', async (req, res) => {
-  const { seller, comment, type, stars, user } = req.body;
-  const addReviews = new Review({seller, comment, type, stars, user});
-    await addReviews.save();
-    res.json({status: 1, mssg: 'Published Review'});
-  });
+  let profileObject = await Profile.aggregate([{ $match: { email: req.body.email } }]);
+  const review = {
+    seller:req.body.seller,
+    comment:req.body.comment,
+    type:req.body.type,
+    stars:req.body.stars,
+    email:req.body.email,
+    profileData:{
+      firstName:profileObject[0].firstName,
+      lastName:profileObject[0].lastName,
+      email:profileObject[0].email
+    }
+  };
+
+  const addReviews = new Review(review);
+  await addReviews.save();
+  res.json({status: 1, mssg: 'Published Review'});
+});
 
   // ACTUALIZAR una nueva reseña 
 router.put('/:id', async (req, res) => {
