@@ -7,6 +7,7 @@ var cors = require('cors');
 const bodyParser = require('body-parser');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var authRouter = require('./routes/auth');
 var middlewareAuth = require('./middleware/auth');
 const mongoose = require('mongoose');
 var middlewareAuthClass = new middlewareAuth();
@@ -35,6 +36,7 @@ mongoose.connect(URI, {useNewUrlParser: true, dbName: "Easy"})
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/auth', authRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
