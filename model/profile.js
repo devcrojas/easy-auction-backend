@@ -2,9 +2,9 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const Profile = new Schema({
-    _id: { type: String, require: true },
-    firstName: { type: String, require: true },
-    lastName: {type: String, require: true},
+    _id: { type: String, require: false },
+    firstName: { type: String, require: false },
+    lastName: {type: String, require: false},
     birthday: {type: Date, require: false},
     address: {
         cpp: { type: String, require: false },
