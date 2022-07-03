@@ -1,12 +1,44 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
+let = dn = Date.now();
+let d = new Date(dn);
+
 const Review = new Schema({
-    seller: { type: String, required: true },
+    seller: { 
+        firstNameSeller: { type: String, require: false },
+        lastNameSeller: {type: String, require: false},
+        email: { type: String, required: false }
+     },
     comment: { type: String, required: true },
     type: { type: String, required: true },
     stars: { type: Number, required: true },
-    user: { type: String, default: 'Anónimo', required: false}
+    emailP: { type: String, required: true },
+    emailS: { type: String, required: true },
+    profileData: {
+        firstName: { type: String, require: false },
+        lastName: {type: String, require: false},
+        email: { type: String, required: false },
+        file: {
+            fileName: {
+                type: String,
+                required: false
+            },
+            filePath: {
+                type: String,
+                required: false
+            },
+            fileType: {
+                type: String,
+                required: false
+            },
+            fileSize: {
+                type: String,
+                required: false
+            }
+        }
+    },
+    datePublished: { type: String, default: d.toLocaleDateString() }
 },
 { versionKey: false });
 

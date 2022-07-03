@@ -10,8 +10,12 @@ const multer = require('../middleware/multer')
 
 // OBTENER UN SOLO vendedor
 router.get('/:id', async (req, res) => {
-  const getSeller = await Seller.findById(req.params.id);
-  res.json(getSeller);
+  try {
+    const getSeller = await Seller.findById(req.params.id);
+    res.status(200).send(getSeller);
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
 });
 
 // OBTENER TODOS los vendedores
@@ -28,6 +32,7 @@ router.get('/', async (req, res) => {
 router.post('/', multer.upload.single('file'), async (req, res, next) => {
   try{
     const addSeller = new Seller({
+      _id:req.body.email,
       firstNameSeller:req.body.firstNameSeller,
       lastNameSeller:req.body.lastNameSeller,
       birthday:req.body.birthday,
@@ -35,12 +40,6 @@ router.post('/', multer.upload.single('file'), async (req, res, next) => {
       phone:req.body.phone,
       email:req.body.email,
       password:req.body.password,
-      bankAccount:{
-        cardNumber:req.body.cardNumber,
-        expiration:req.body.expiration,
-        cvv:req.body.cvv
-      },
-      emailPaypal:req.body.emailPaypal,
       status:req.body.status,
       file:{
         fileName: req.file.originalname,
@@ -67,12 +66,6 @@ router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
       phone:req.body.phone,
       email:req.body.email,
       password:req.body.password,
-      bankAccount:{
-        cardNumber:req.body.cardNumber,
-        expiration:req.body.expiration,
-        cvv:req.body.cvv
-      },
-      emailPaypal:req.body.emailPaypal,
       status:req.body.status,
       file:{
         fileName: req.file.originalname,
@@ -90,12 +83,16 @@ router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
 
 // ELIMINAR un vendedor
 router.delete('/:id', async (req, res) => {
-  await Seller.findByIdAndRemove(req.params.id);
-  res.json({status: 1, mssg: 'Seller Deleted'});
-  /* if (Product.findByIdAndRemove(req.params.id) == true)
-    res.json({status: 1, mssg: 'Product Deleted'});
-  else (Product.findByIdAndRemove(req.params.id) == false)
-    res.json({status: -1, mssg: 'Product Not Deleted'}); */
+  try {
+    await Seller.findByIdAndRemove(req.params.id);
+    res.status(200).send('Seller Deleted');
+    /* if (Product.findByIdAndRemove(req.params.id) == true)
+      res.json({status: 1, mssg: 'Product Deleted'});
+    else (Product.findByIdAndRemove(req.params.id) == false)
+      res.json({status: -1, mssg: 'Product Not Deleted'}); */
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
 });
 
 const fileSizeFormatter = (bytes, decimal) => {
@@ -109,3 +106,5 @@ const fileSizeFormatter = (bytes, decimal) => {
 }
 
 module.exports = router;
+
+/* FIN */
