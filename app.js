@@ -40,14 +40,11 @@ mongoose.connect(URI, {useNewUrlParser: true, dbName: "Easy"})
 // Routes
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-<<<<<<< HEAD
 app.use('/profiles', require('./routes/profiles'));
 app.use('/reviews', require('./routes/reviews'));
 app.use('/products', require('./routes/products'));
 app.use('/sellers', require('./routes/sellers'));
-=======
 app.use('/auth', authRouter);
->>>>>>> remotes/origin/master
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
