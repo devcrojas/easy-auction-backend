@@ -87,35 +87,34 @@ router.post('/', multer.upload.single('file'), async (req, res, next) => {
 router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
   try{
     const updateProfile = {
-      _id:req.body.profile.email,
-      firstName:req.body.profile.firstName,
-      lastName:req.body.profile.lastName,
-      birthday:req.body.profile.birthday,
+      firstName:req.body.firstName,
+      lastName:req.body.lastName,
+      birthday:req.body.birthday,
       address:{
-        cpp:req.body.profile.address.cpp,
-        street:req.body.profile.address.street,
-        suburb:req.body.profile.address.suburb,
-        municipaly:req.body.profile.address.municipaly,
-        state:req.body.profile.address.state,
+        cpp:req.body.cpp,
+        street:req.body.street,
+        suburb:req.body.suburb,
+        municipaly:req.body.municipaly,
+        state:req.body.state,
       },
-      phone:req.body.profile.phone,
-      email:req.body.profile.email,
-      password:req.body.profile.password,
-      status:req.body.profile.status
+      phone:req.body.phone,
+      email:req.body.email,
+      password:req.body.password,
+      status:req.body.status
     };
-    if (typeof req.file.image === "undefined") {
-      updateProfile.file.image = {
+    if (typeof req.file === "undefined") {
+      updateProfile.file = {
         fileName: 'noUserImage.jpg',
         filePath: 'uploads\\noUserImage.jpg',
         fileType: 'image/jpeg',
         fileSize: fileSizeFormatter(8364, 2)
       };
     } else {
-      updateProfile.file.image = {
-        fileName: req.file.image.originalname,
-        filePath: req.file.image.path,
-        fileType: req.file.image.mimetype,
-        fileSize: fileSizeFormatter(req.file.image.size, 2) // 0.00
+      updateProfile.file = {
+        fileName: req.file.originalname,
+        filePath: req.file.path,
+        fileType: req.file.mimetype,
+        fileSize: fileSizeFormatter(req.file.size, 2) // 0.00
       };
     }
 
