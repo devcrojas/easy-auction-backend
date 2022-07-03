@@ -88,19 +88,20 @@ router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
   try{
     //console.log(req.body.profile);
     const updateProfile = {
-        firstName:req.body.firstName,
-        lastName:req.body.lastName,
-        birthday:req.body.birthday,
-        address:{
-          cpp:req.body.cpp,
-          street:req.body.street,
-          suburb:req.body.suburb,
-          municipaly:req.body.municipaly,
-          state:req.body.state,
-        },
-        phone:req.body.phone,
-        email:req.body.email
-      };
+      firstName:req.body.firstName,
+      lastName:req.body.lastName,
+      birthday:req.body.birthday,
+      address:{
+        cpp:req.body.cpp,
+        street:req.body.street,
+        suburb:req.body.suburb,
+        municipaly:req.body.municipaly,
+        state:req.body.state,
+      },
+      phone:req.body.phone,
+      email:req.body.email
+    };
+    
     /* updateProfile.file = {
       fileName: req.file.originalname,
       filePath: req.file.path,
