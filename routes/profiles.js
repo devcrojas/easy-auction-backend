@@ -86,36 +86,40 @@ router.post('/', multer.upload.single('file'), async (req, res, next) => {
 // ACTUALIZAR perfil
 router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
   try{
-    const updateProfile = {
-      firstName:req.body.firstName,
-      lastName:req.body.lastName,
-      birthday:req.body.birthday,
-      address:{
-        cpp:req.body.cpp,
-        street:req.body.street,
-        suburb:req.body.suburb,
-        municipaly:req.body.municipaly,
-        state:req.body.state,
-      },
-      phone:req.body.phone,
-      email:req.body.email,
-      password:req.body.password,
-      status:req.body.status
-    };
-    if (typeof req.file === "undefined") {
-      updateProfile.file = {
-        fileName: 'noUserImage.jpg',
-        filePath: 'uploads\\noUserImage.jpg',
-        fileType: 'image/jpeg',
-        fileSize: fileSizeFormatter(8364, 2)
+    //console.log(req.body.profile);
+    const updateProfile = {};
+
+    if(req.body.firstName || req.body.lastName || req.body.birthday || req.body.cpp
+      || req.body.street || req.body.suburb || req.body.municipaly || req.body.state
+      || req.body.phone || req.body.email){
+      updateProfile = {
+        firstName:req.body.firstName,
+        lastName:req.body.lastName,
+        birthday:req.body.birthday,
+        address:{
+          cpp:req.body.cpp,
+          street:req.body.street,
+          suburb:req.body.suburb,
+          municipaly:req.body.municipaly,
+          state:req.body.state,
+        },
+        phone:req.body.phone,
+        email:req.body.email
       };
-    } else {
+    }
+    /* updateProfile.file = {
+      fileName: req.file.originalname,
+      filePath: req.file.path,
+      fileType: req.file.mimetype,
+      fileSize: fileSizeFormatter(req.file.size, 2) // 0.00
+    }; */
+    if(req.file && req.file.originalname) {
       updateProfile.file = {
         fileName: req.file.originalname,
         filePath: req.file.path,
         fileType: req.file.mimetype,
         fileSize: fileSizeFormatter(req.file.size, 2) // 0.00
-      };
+      } 
     }
 
     await Profile.findByIdAndUpdate(req.params.id, updateProfile);
