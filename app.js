@@ -39,11 +39,11 @@ mongoose.connect(URI, {useNewUrlParser: true, dbName: "Easy"})
 
 // Routes
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/profiles', require('./routes/profiles'));
-app.use('/reviews', require('./routes/reviews'));
-app.use('/products', require('./routes/products'));
-app.use('/sellers', require('./routes/sellers'));
+app.use('/api/users', usersRouter);
+app.use('/api/profiles', require('./routes/profiles'));
+app.use('/api/reviews', require('./routes/reviews'));
+app.use('/api/products', require('./routes/products'));
+app.use('/api/sellers', require('./routes/sellers'));
 app.use('/auth', authRouter);
 
 // catch 404 and forward to error handler
