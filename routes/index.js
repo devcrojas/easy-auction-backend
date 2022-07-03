@@ -65,7 +65,7 @@ router.post("/login", async function (req, res, next) {
           name: login[0].name,
           id: login[0]._id,
           date: new Date(),
-          profile: profile
+          profile: profile[0]
         }, process.env.TOKEN_SECRET)
 
         res.header('auth-token', token).json({
