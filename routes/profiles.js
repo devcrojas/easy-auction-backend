@@ -87,12 +87,7 @@ router.post('/', multer.upload.single('file'), async (req, res, next) => {
 router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
   try{
     //console.log(req.body.profile);
-    const updateProfile = {};
-
-    if(req.body.firstName || req.body.lastName || req.body.birthday || req.body.cpp
-      || req.body.street || req.body.suburb || req.body.municipaly || req.body.state
-      || req.body.phone || req.body.email){
-      updateProfile = {
+    const updateProfile = {
         firstName:req.body.firstName,
         lastName:req.body.lastName,
         birthday:req.body.birthday,
@@ -106,7 +101,6 @@ router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
         phone:req.body.phone,
         email:req.body.email
       };
-    }
     /* updateProfile.file = {
       fileName: req.file.originalname,
       filePath: req.file.path,
