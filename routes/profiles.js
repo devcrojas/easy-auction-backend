@@ -85,25 +85,6 @@ router.post('/', multer.upload.single('file'), async (req, res, next) => {
 
 // ACTUALIZAR perfil
 router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
-<<<<<<< HEAD
-  console.log(req.body)
-  try {
-    const updateProfile = {
-      firstName:req.body.firstName,
-      lastName:req.body.lastName,
-      birthday:req.body.birthday,
-      address:{
-        cpp:req.body.cpp,
-        street:req.body.street,
-        suburb:req.body.suburb,
-        municipaly:req.body.municipaly,
-        state:req.body.state,
-      },
-      phone:req.body.phone,
-      email:req.body.email
-    };
-    updateProfile.file = {
-
   try{
     //console.log(req.body.profile);
     const updateProfile = {};
