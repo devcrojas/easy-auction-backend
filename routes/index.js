@@ -82,6 +82,36 @@ router.post("/login", async function (req, res, next) {
 
 });
 
+router.post("/getUserByEmail", async function (req, res, next) {
+  try {
+    console.log(req.body);
+    if (req.body.correoSend !== "") {
+      //Validar a la base de datos el usuario y la contraseña
+      let user = await Login.aggregate([{ $match: { email: req.body.correoSend} }]);
+      // console.log(login);
+      /*/if (req.body.user == "crojas" && req.body.pass == "26394")
+        res.json({ status: 1, mssg: "Login Exitoso!" });
+      else
+        res.json({ status: -1, mssg: "Login Fallido!" });/*/
+
+      if (user.length > 0) {
+        //console.log(login);
+        delete user[0].password;
+        res.json({status: 1, user});
+      } else
+        res.json({ status: -1, mssg: "Usuario incorrecto!" });
+    } else {
+      res.json({ status: -1, mssg: "Usuario incorrecto!" });
+    }
+  } catch (e) {
+    console.log(e.message);
+    res.json({ status: -1, mssg: "Error - Revisar Log" });
+  }
+
+
+});
+
+
 router.get('/books', validateSession(), (req, res) => {
   res.json({author: "1"});
 });
