@@ -7,12 +7,12 @@ const Profile = new Schema({
     lastName: {type: String, require: true},
     birthday: {type: Date, require: false},
     address: {
-        cpp: { type: String, require: true },
-        stree: { type: String, require: false },
+        cpp: { type: String, require: false },
+        street: { type: String, require: false },
         suburb: { type: String, require: false },
         municipaly: { type: String, require: false },
-        state: { type: String, require: true }
-        },
+        state: { type: String, require: false }
+    },
     phone: { type: String, require: false },
     email: { type: String, required: false },
     password: { type: String, required: false},

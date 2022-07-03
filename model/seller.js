@@ -6,16 +6,16 @@ const Seller = new Schema({
     firstNameSeller: { type: String, require: true },
     lastNameSeller: {type: String, require: true},
     birthday: {type: Date, require: false},
-    address: {type: String, require: true},
+    address: {
+        cpp: { type: String, require: false },
+        street: { type: String, require: false },
+        suburb: { type: String, require: false },
+        municipaly: { type: String, require: false },
+        state: { type: String, require: false }
+    },
     phone: {type: String, require: true},
     email: { type: String, required: false },
     password: { type: String, required: false},
-    bankAccount: { type:{
-        cardNumber: { type: Number, require: false },
-        expiration: { type: String, require: false },
-        cvv: { type: Number, require: false }
-    }},
-    emailPaypal: { type: String, required: false },
     status: { type: String, default:'Inactive', required: false },
     file: {
         fileName: {

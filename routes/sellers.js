@@ -35,12 +35,6 @@ router.post('/', multer.upload.single('file'), async (req, res, next) => {
       phone:req.body.phone,
       email:req.body.email,
       password:req.body.password,
-      bankAccount:{
-        cardNumber:req.body.cardNumber,
-        expiration:req.body.expiration,
-        cvv:req.body.cvv
-      },
-      emailPaypal:req.body.emailPaypal,
       status:req.body.status,
       file:{
         fileName: req.file.originalname,
@@ -67,12 +61,6 @@ router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
       phone:req.body.phone,
       email:req.body.email,
       password:req.body.password,
-      bankAccount:{
-        cardNumber:req.body.cardNumber,
-        expiration:req.body.expiration,
-        cvv:req.body.cvv
-      },
-      emailPaypal:req.body.emailPaypal,
       status:req.body.status,
       file:{
         fileName: req.file.originalname,
