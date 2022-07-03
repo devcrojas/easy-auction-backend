@@ -1,19 +1,25 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
-const Profile = require('./profile');
+
+let = dn = Date.now();
+let d = new Date(dn);
 
 const Review = new Schema({
-    seller: { type: String, required: true },
+    seller: { 
+        firstNameSeller: { type: String, require: false },
+        lastNameSeller: {type: String, require: false},
+        email: { type: String, required: false }
+     },
     comment: { type: String, required: true },
     type: { type: String, required: true },
     stars: { type: Number, required: true },
-    email: { type: String, required: true },
+    emailP: { type: String, required: true },
+    emailS: { type: String, required: true },
     profileData: {
         firstName: { type: String, require: false },
         lastName: {type: String, require: false},
-        
         email: { type: String, required: false },
-        /* file: {
+        file: {
             fileName: {
                 type: String,
                 required: false
@@ -30,9 +36,9 @@ const Review = new Schema({
                 type: String,
                 required: false
             }
-        } */
-    }
-
+        }
+    },
+    datePublished: { type: String, default: d.toLocaleDateString() }
 },
 { versionKey: false });
 

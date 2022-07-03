@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const Seller = new Schema({
-    
+    _id: { type: String, require: false },
     firstNameSeller: { type: String, require: true },
     lastNameSeller: {type: String, require: true},
     birthday: {type: Date, require: false},
@@ -13,26 +13,26 @@ const Seller = new Schema({
         municipaly: { type: String, require: false },
         state: { type: String, require: false }
     },
-    phone: {type: String, require: true},
+    phone: {type: String, require: false},
     email: { type: String, required: false },
     password: { type: String, required: false},
     status: { type: String, default:'Inactive', required: false },
     file: {
         fileName: {
             type: String,
-            required: true
+            required: false
         },
         filePath: {
             type: String,
-            required: true
+            required: false
         },
         fileType: {
             type: String,
-            required: true
+            required: false
         },
         fileSize: {
             type: String,
-            required: true
+            required: false
         }
     }
 },

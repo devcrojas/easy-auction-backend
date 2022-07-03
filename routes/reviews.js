@@ -5,54 +5,117 @@ const router = express.Router();
 // Review Model
 const Review = require('../model/review');
 const Profile = require('../model/profile');
+const Seller = require('../model/seller');
+
+// OBTENER UN SOLO perfil
+router.get('/:id', async (req, res) => {
+  try {
+    const getReview = await Review.findById(req.params.id);
+    res.status(200).send(getReview);
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+});
+
 // OBTENER TODAS las reseñas
 router.get('/', async (req, res) => {
-  const getReviews = await Review.find();
-  res.json(getReviews);
+  try {
+    const getReviews = await Review.find();
+    res.status(200).send(getReviews);
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
 });
 
 // AGREGAR reseña
 router.post('/', async (req, res) => {
-  let profileObject = await Profile.aggregate([{ $match: { email: req.body.email } }]);
-  const review = {
-    seller:req.body.seller,
-    comment:req.body.comment,
-    type:req.body.type,
-    stars:req.body.stars,
-    email:req.body.email,
-    profileData:{
-      firstName:profileObject[0].firstName,
-      lastName:profileObject[0].lastName,
-      email:profileObject[0].email
-    }
-  };
+  try {
+    let profileObject = await Profile.aggregate([{ $match: { email: req.body.emailP } }]);
+    let sellerObject = await Seller.aggregate([{ $match: { email: req.body.emailS } }]);
 
-  const addReviews = new Review(review);
-  await addReviews.save();
-  res.json({status: 1, mssg: 'Published Review'});
+    const review = {
+      seller:{
+        firstNameSeller:sellerObject[0].firstNameSeller,
+        lastNameSeller:sellerObject[0].lastNameSeller,
+        email:sellerObject[0].email
+      },
+      comment:req.body.comment,
+      type:req.body.type,
+      stars:req.body.stars,
+      emailP:req.body.emailP,
+      emailS:req.body.emailS,
+      profileData:{
+        firstName:profileObject[0].firstName,
+        lastName:profileObject[0].lastName,
+        email:profileObject[0].email,
+        file:{
+          fileName: profileObject[0].file.fileName,
+          filePath: profileObject[0].file.filePath,
+          fileType: profileObject[0].file.fileType,
+          fileSize: profileObject[0].file.fileSize
+        }
+      }
+    };
+  
+    const addReviews = new Review(review);
+    await addReviews.save();
+    res.status(201).send('Successfully Upgraded Review!');
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
 });
 
   // ACTUALIZAR una nueva reseña 
 router.put('/:id', async (req, res) => {
-  const { seller, comment, type, stars, user } = req.body;
-  const newReviews = {seller, comment, type, stars, user};
-  await Review.findByIdAndUpdate(req.params.id, newReviews);
-  res.json({status: 1, mssg: 'Review Updated'});
-  /* if (Product.findByIdAndUpdate(req.params.id, newProduct) == true)
-    res.json({status: 1, mssg: 'Product Updated'});
-  else (Product.findByIdAndUpdate(req.params.id, newProduct) == false)
-    res.json({status: -1, mssg: 'Product Not Updated'}); */
+  try {
+    let profileObject = await Profile.aggregate([{ $match: { email: req.body.email } }]);
+  
+    const updateReviews = {
+      seller:req.body.seller,
+      comment:req.body.comment,
+      type:req.body.type,
+      stars:req.body.stars,
+      email:req.body.email,
+      profileData:{
+        firstName:profileObject[0].firstName,
+        lastName:profileObject[0].lastName,
+        email:profileObject[0].email
+      }
+    };
+    await Review.findByIdAndUpdate(req.params.id, updateReviews);
+    res.status(201).send('Successfully Upgraded Review!');
+    /* if (Product.findByIdAndUpdate(req.params.id, newProduct) == true)
+      res.json({status: 1, mssg: 'Product Updated'});
+    else (Product.findByIdAndUpdate(req.params.id, newProduct) == false)
+      res.json({status: -1, mssg: 'Product Not Updated'}); */
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
 });
 
 // ELIMINAR reseña
 router.delete('/:id', async (req, res) => {
-  await Review.findByIdAndRemove(req.params.id);
-  res.json({status: 1, mssg: 'Review Deleted'});
-  /* if (Product.findByIdAndRemove(req.params.id) == true)
-    res.json({status: 1, mssg: 'Product Deleted'});
-  else (Product.findByIdAndRemove(req.params.id) == false)
-    res.json({status: -1, mssg: 'Product Not Deleted'}); */
+  try {
+    await Review.findByIdAndRemove(req.params.id);
+    res.status(200).send('Review Deleted');
+    /* if (Product.findByIdAndRemove(req.params.id) == true)
+      res.json({status: 1, mssg: 'Product Deleted'});
+    else (Product.findByIdAndRemove(req.params.id) == false)
+      res.json({status: -1, mssg: 'Product Not Deleted'}); */
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
 });
+
+const fileSizeFormatter = (bytes, decimal) => {
+  if(bytes === 0){
+      return '0 Bytes';
+  }
+  const dm = decimal || 2;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'YB', 'ZB'];
+  const index = Math.floor(Math.log(bytes) / Math.log(1000));
+  return parseFloat((bytes / Math.pow(1000, index)).toFixed(dm)) + ' ' + sizes[index];
+}
 
 module.exports = router;
 /* FIN */
