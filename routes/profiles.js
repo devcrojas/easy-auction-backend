@@ -85,25 +85,6 @@ router.post('/', multer.upload.single('file'), async (req, res, next) => {
 
 // ACTUALIZAR perfil
 router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
-<<<<<<< HEAD
-  console.log(req.body)
-  try {
-    const updateProfile = {
-      firstName:req.body.firstName,
-      lastName:req.body.lastName,
-      birthday:req.body.birthday,
-      address:{
-        cpp:req.body.cpp,
-        street:req.body.street,
-        suburb:req.body.suburb,
-        municipaly:req.body.municipaly,
-        state:req.body.state,
-      },
-      phone:req.body.phone,
-      email:req.body.email
-    };
-    updateProfile.file = {
-=======
   try{
     //console.log(req.body.profile);
     const updateProfile = {};
@@ -127,14 +108,10 @@ router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
       };
     }
     /* updateProfile.file = {
->>>>>>> caba12a31cc3b64de34cc1cc5ed8c8f7239789c0
       fileName: req.file.originalname,
       filePath: req.file.path,
       fileType: req.file.mimetype,
       fileSize: fileSizeFormatter(req.file.size, 2) // 0.00
-<<<<<<< HEAD
-    };
-=======
     }; */
     if(req.file && req.file.originalname) {
       updateProfile.file = {
@@ -144,7 +121,6 @@ router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
         fileSize: fileSizeFormatter(req.file.size, 2) // 0.00
       } 
     }
->>>>>>> caba12a31cc3b64de34cc1cc5ed8c8f7239789c0
 
     await Profile.findByIdAndUpdate(req.params.id, updateProfile);
     res.status(201).send('Successfully Upgraded Profile!');
