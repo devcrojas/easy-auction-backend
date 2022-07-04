@@ -33,7 +33,7 @@ router.post('/', async (req, res) => {
   try {
     let userObject = await Profile.aggregate([{ $match: { email: req.body.emailU } }]);
     let profileObject = await Seller.aggregate([{ $match: { email: req.body.emailP } }]);
-    let productObject = await Product.aggregate([{ $match: { _id: req.body.productId } }]);
+    let productObject = await Product.aggregate([{ $match: { email: req.body.emailPd } }]);
 
     const review = {
       userData:{
@@ -45,7 +45,7 @@ router.post('/', async (req, res) => {
       stars:req.body.stars,
       emailU:req.body.emailU,
       emailP:req.body.emailP,
-      productId:req.body.productId,
+      emailPd:req.body.emailPd,
       profileData:{
         firstName:profileObject[0].firstName,
         lastName:profileObject[0].lastName,
@@ -81,7 +81,7 @@ router.put('/:id', async (req, res) => {
   try {
     let userObject = await Profile.aggregate([{ $match: { email: req.body.emailU } }]);
     let profileObject = await Seller.aggregate([{ $match: { email: req.body.emailP } }]);
-    let productObject = await Product.aggregate([{ $match: { _id: req.body.productId } }]);
+    let productObject = await Product.aggregate([{ $match: { email: req.body.emailPd } }]);
 
     const updateReviews = {
       userData:{
@@ -93,7 +93,7 @@ router.put('/:id', async (req, res) => {
       stars:req.body.stars,
       emailU:req.body.emailU,
       emailP:req.body.emailP,
-      productId:req.body.productId,
+      emailPd:req.body.emailPd,
       profileData:{
         firstName:profileObject[0].firstName,
         lastName:profileObject[0].lastName,
