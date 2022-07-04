@@ -5,19 +5,21 @@ let = dn = Date.now();
 let d = new Date(dn);
 
 const Review = new Schema({
-    seller: { 
-        firstNameSeller: { type: String, require: false },
-        lastNameSeller: {type: String, require: false},
+    userData: { 
+        name: { type: String, require: false },
         email: { type: String, required: false }
      },
     comment: { type: String, required: true },
     type: { type: String, required: true },
     stars: { type: Number, required: true },
+
+    emailU: { type: String, required: true },
     emailP: { type: String, required: true },
-    emailS: { type: String, required: true },
+    productId: { type: String, required: true },
+
     profileData: {
         firstName: { type: String, require: false },
-        lastName: {type: String, require: false},
+        lastName: { type: String, require: false },
         email: { type: String, required: false },
         file: {
             fileName: {
@@ -35,6 +37,27 @@ const Review = new Schema({
             fileSize: {
                 type: String,
                 required: false
+            }
+        }
+    },
+    productData: {
+        nameProduct: { type: String, required: true },
+        file: {
+            fileName: {
+                type: String,
+                required: true
+            },
+            filePath: {
+                type: String,
+                required: true
+            },
+            fileType: {
+                type: String,
+                required: true
+            },
+            fileSize: {
+                type: String,
+                required: true
             }
         }
     },

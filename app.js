@@ -37,14 +37,15 @@ mongoose.connect(URI, {useNewUrlParser: true, dbName: "Easy"})
   .then(db => console.log('BD Conectada'))
   .catch(error => console.error(error));
 
+
 // Routes
-app.use('/', indexRouter);
+app.use('/api/', indexRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/profiles', require('./routes/profiles'));
 app.use('/api/reviews', require('./routes/reviews'));
 app.use('/api/products', require('./routes/products'));
 app.use('/api/sellers', require('./routes/sellers'));
-app.use('/auth', authRouter);
+app.use('/api/auth', authRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
