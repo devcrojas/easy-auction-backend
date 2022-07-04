@@ -101,24 +101,29 @@ router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
       phone:req.body.phone,
       email:req.body.email
     };
-    
-    /* updateProfile.file = {
-      fileName: req.file.originalname,
-      filePath: req.file.path,
-      fileType: req.file.mimetype,
-      fileSize: fileSizeFormatter(req.file.size, 2) // 0.00
-    }; */
-    if(req.file && req.file.originalname) {
+
+    await Profile.findByIdAndUpdate(req.params.id, updateProfile);
+    res.status(201).send('Successfully Upgraded Profile!');
+  }catch(error) {
+    res.status(400).send(error.message);
+  }
+});
+
+// ACTUALIZAR perfil
+router.put('/image/:id', multer.upload.single('file'), async (req, res, next) => {
+  try{
+    //console.log(req.body.profile);
+    const updateProfile = { };
+
       updateProfile.file = {
         fileName: req.file.originalname,
         filePath: req.file.path,
         fileType: req.file.mimetype,
         fileSize: fileSizeFormatter(req.file.size, 2) // 0.00
       } 
-    }
 
     await Profile.findByIdAndUpdate(req.params.id, updateProfile);
-    res.status(201).send('Successfully Upgraded Profile!');
+    res.status(201).send('Successfully Upgraded Image Profile!');
   }catch(error) {
     res.status(400).send(error.message);
   }
