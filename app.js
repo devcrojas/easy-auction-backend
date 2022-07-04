@@ -37,6 +37,7 @@ mongoose.connect(URI, {useNewUrlParser: true, dbName: "Easy"})
   .then(db => console.log('BD Conectada'))
   .catch(error => console.error(error));
 
+
 // Routes
 app.use('/api/', indexRouter);
 app.use('/api/users', usersRouter);
