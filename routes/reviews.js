@@ -6,6 +6,7 @@ const router = express.Router();
 const Review = require('../model/review');
 const Profile = require('../model/profile');
 const Seller = require('../model/seller');
+const Product = require('../model/product');
 
 // OBTENER UN SOLO perfil
 router.get('/:id', async (req, res) => {
@@ -30,20 +31,21 @@ router.get('/', async (req, res) => {
 // AGREGAR reseña
 router.post('/', async (req, res) => {
   try {
-    let profileObject = await Profile.aggregate([{ $match: { email: req.body.emailP } }]);
-    let sellerObject = await Seller.aggregate([{ $match: { email: req.body.emailS } }]);
+    let userObject = await Profile.aggregate([{ $match: { email: req.body.emailU } }]);
+    let profileObject = await Seller.aggregate([{ $match: { email: req.body.emailP } }]);
+    let productObject = await Product.aggregate([{ $match: { _id: req.body.productId } }]);
 
     const review = {
-      seller:{
-        firstNameSeller:sellerObject[0].firstNameSeller,
-        lastNameSeller:sellerObject[0].lastNameSeller,
-        email:sellerObject[0].email
+      userData:{
+        name:userObject[0].name,
+        email:userObject[0].email
       },
       comment:req.body.comment,
       type:req.body.type,
       stars:req.body.stars,
+      emailU:req.body.emailU,
       emailP:req.body.emailP,
-      emailS:req.body.emailS,
+      productId:req.body.productId,
       profileData:{
         firstName:profileObject[0].firstName,
         lastName:profileObject[0].lastName,
@@ -53,6 +55,15 @@ router.post('/', async (req, res) => {
           filePath: profileObject[0].file.filePath,
           fileType: profileObject[0].file.fileType,
           fileSize: profileObject[0].file.fileSize
+        }
+      },
+      productData:{
+        nameProduct:productObject[0].nameProduct,
+        file:{
+          fileName: productObject[0].file.fileName,
+          filePath: productObject[0].file.filePath,
+          fileType: productObject[0].file.fileType,
+          fileSize: productObject[0].file.fileSize
         }
       }
     };
@@ -65,21 +76,43 @@ router.post('/', async (req, res) => {
   }
 });
 
-  // ACTUALIZAR una nueva reseña 
+// ACTUALIZAR una nueva reseña 
 router.put('/:id', async (req, res) => {
   try {
-    let profileObject = await Profile.aggregate([{ $match: { email: req.body.email } }]);
-  
+    let userObject = await Profile.aggregate([{ $match: { email: req.body.emailU } }]);
+    let profileObject = await Seller.aggregate([{ $match: { email: req.body.emailP } }]);
+    let productObject = await Product.aggregate([{ $match: { _id: req.body.productId } }]);
+
     const updateReviews = {
-      seller:req.body.seller,
+      userData:{
+        name:userObject[0].name,
+        email:userObject[0].email
+      },
       comment:req.body.comment,
       type:req.body.type,
       stars:req.body.stars,
-      email:req.body.email,
+      emailU:req.body.emailU,
+      emailP:req.body.emailP,
+      productId:req.body.productId,
       profileData:{
         firstName:profileObject[0].firstName,
         lastName:profileObject[0].lastName,
-        email:profileObject[0].email
+        email:profileObject[0].email,
+        file:{
+          fileName: profileObject[0].file.fileName,
+          filePath: profileObject[0].file.filePath,
+          fileType: profileObject[0].file.fileType,
+          fileSize: profileObject[0].file.fileSize
+        }
+      },
+      productData:{
+        nameProduct:productObject[0].nameProduct,
+        file:{
+          fileName: productObject[0].file.fileName,
+          filePath: productObject[0].file.filePath,
+          fileType: productObject[0].file.fileType,
+          fileSize: productObject[0].file.fileSize
+        }
       }
     };
     await Review.findByIdAndUpdate(req.params.id, updateReviews);
@@ -118,4 +151,4 @@ const fileSizeFormatter = (bytes, decimal) => {
 }
 
 module.exports = router;
-/* FIN */
+/* FIN 1.0 */
