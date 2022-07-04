@@ -92,11 +92,11 @@ router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
       lastName:req.body.lastName,
       birthday:req.body.birthday,
       address:{
-        cpp:req.body.cpp,
-        street:req.body.street,
-        suburb:req.body.suburb,
-        municipaly:req.body.municipaly,
-        state:req.body.state,
+        cpp:req.body.address.cpp,
+        street:req.body.address.street,
+        suburb:req.body.address.suburb,
+        municipaly:req.body.address.municipaly,
+        state:req.body.address.state
       },
       phone:req.body.phone,
       email:req.body.email
