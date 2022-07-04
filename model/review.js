@@ -66,4 +66,4 @@ const Review = new Schema({
 { versionKey: false });
 
 module.exports = mongoose.model('Review', Review);
-/* FIN */
+/* FIN 1.0 */
