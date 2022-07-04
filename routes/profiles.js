@@ -110,7 +110,11 @@ router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
   }
 });
 
+<<<<<<< HEAD
 // ACTUALIZAR perfil
+=======
+// ACTUALIZAR imagen de perfil
+>>>>>>> d65630872f8a0f636472f4c220b91250e33fd892
 router.put('/image/:id', multer.upload.single('file'), async (req, res, next) => {
   try{
     //console.log(req.body.profile);

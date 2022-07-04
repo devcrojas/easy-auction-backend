@@ -41,23 +41,23 @@ const Review = new Schema({
         }
     },
     productData: {
-        nameProduct: { type: String, required: true },
+        nameProduct: { type: String, required: false },
         file: {
             fileName: {
                 type: String,
-                required: true
+                required: false
             },
             filePath: {
                 type: String,
-                required: true
+                required: false
             },
             fileType: {
                 type: String,
-                required: true
+                required: false
             },
             fileSize: {
                 type: String,
-                required: true
+                required: false
             }
         }
     },
@@ -66,4 +66,4 @@ const Review = new Schema({
 { versionKey: false });
 
 module.exports = mongoose.model('Review', Review);
-/* FIN */
+/* FIN 1.0 */
