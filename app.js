@@ -38,7 +38,7 @@ mongoose.connect(URI, {useNewUrlParser: true, dbName: "Easy"})
   .catch(error => console.error(error));
 
 // Routes
-app.use('/', indexRouter);
+app.use('/api/', indexRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/profiles', require('./routes/profiles'));
 app.use('/api/reviews', require('./routes/reviews'));
