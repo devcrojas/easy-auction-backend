@@ -13,7 +13,8 @@ const multer = require('../middleware/multer')
 router.get('/:id', async (req, res) => {
   try {
     const getProfile = await Profile.findById(req.params.id);
-    res.status(200).send(getProfile);
+    res.send(getProfile);
+    res.status(200);
   } catch (error) {
     res.status(400).send('Perfil aun no creado');
   }
@@ -21,34 +22,34 @@ router.get('/:id', async (req, res) => {
 
 // OBTENER TODOS los perfile
 router.get('/', async (req, res) => {
-  try{
+  try {
     const getProfiles = await Profile.find();
-    
+
     res.status(200).send(getProfiles);
-  }catch(error) {
+  } catch (error) {
     res.status(400).send(error.message);
   }
 });
 
 // AGREGAR un nuevo perfil
 router.post('/', multer.upload.single('file'), async (req, res, next) => {
-  try{
+  try {
     const profile = {
-      _id:req.body.email,
-      firstName:req.body.firstName,
-      lastName:req.body.lastName,
-      birthday:req.body.birthday,
-      address:{
-        cpp:req.body.address.cpp,
-        street:req.body.address.street,
-        suburb:req.body.address.suburb,
-        municipaly:req.body.address.municipaly,
-        state:req.body.address.state,
+      _id: req.body.email,
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      birthday: req.body.birthday,
+      address: {
+        cpp: req.body.address.cpp,
+        street: req.body.address.street,
+        suburb: req.body.address.suburb,
+        municipaly: req.body.address.municipaly,
+        state: req.body.address.state,
       },
-      phone:req.body.phone,
-      email:req.body.email,
-      password:req.body.password,
-      status:req.body.status
+      phone: req.body.phone,
+      email: req.body.email,
+      password: req.body.password,
+      status: req.body.status
     };
 
     if (typeof req.file === "undefined") {
@@ -78,7 +79,7 @@ router.post('/', multer.upload.single('file'), async (req, res, next) => {
     const addProfile = new Profile(profile);
     await addProfile.save();
     res.status(201).send('Profile Successfully Added!');
-  }catch(error) {
+  } catch (error) {
     res.status(400).send(error.message);
   }
 });
@@ -92,33 +93,38 @@ router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
       lastName:req.body.lastName,
       birthday:req.body.birthday,
       address:{
-        cpp:req.body.cpp,
-        street:req.body.street,
-        suburb:req.body.suburb,
-        municipaly:req.body.municipaly,
-        state:req.body.state,
+        cpp:req.body.address.cpp,
+        street:req.body.address.street,
+        suburb:req.body.address.suburb,
+        municipaly:req.body.address.municipaly,
+        state:req.body.address.state
       },
       phone:req.body.phone,
       email:req.body.email
     };
-    
-    /* updateProfile.file = {
-      fileName: req.file.originalname,
-      filePath: req.file.path,
-      fileType: req.file.mimetype,
-      fileSize: fileSizeFormatter(req.file.size, 2) // 0.00
-    }; */
-    if(req.file && req.file.originalname) {
+
+    await Profile.findByIdAndUpdate(req.params.id, updateProfile);
+    res.status(201).send('Successfully Upgraded Profile!');
+  }catch(error) {
+    res.status(400).send(error.message);
+  }
+});
+
+// ACTUALIZAR perfil
+router.put('/image/:id', multer.upload.single('file'), async (req, res, next) => {
+  try{
+    //console.log(req.body.profile);
+    const updateProfile = { };
+
       updateProfile.file = {
         fileName: req.file.originalname,
         filePath: req.file.path,
         fileType: req.file.mimetype,
         fileSize: fileSizeFormatter(req.file.size, 2) // 0.00
       } 
-    }
 
     await Profile.findByIdAndUpdate(req.params.id, updateProfile);
-    res.status(201).send('Successfully Upgraded Profile!');
+    res.status(201).send('Successfully Upgraded Image Profile!');
   }catch(error) {
     res.status(400).send(error.message);
   }
@@ -139,8 +145,8 @@ router.delete('/:id', async (req, res) => {
 });
 
 const fileSizeFormatter = (bytes, decimal) => {
-  if(bytes === 0){
-      return '0 Bytes';
+  if (bytes === 0) {
+    return '0 Bytes';
   }
   const dm = decimal || 2;
   const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'YB', 'ZB'];
