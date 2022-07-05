@@ -13,9 +13,9 @@ const Review = new Schema({
     type: { type: String, required: true },
     stars: { type: Number, required: true },
 
-    emailU: { type: String, required: true },
-    emailP: { type: String, required: true },
-    emailPd: { type: String, required: true },
+    emailU: { type: String, required: false },
+    emailP: { type: String, required: false },
+    productId: { type: String, required: false },
 
     profileData: {
         firstName: { type: String, require: false },
