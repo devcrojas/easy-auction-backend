@@ -13,9 +13,9 @@ const Review = new Schema({
     type: { type: String, required: true },
     stars: { type: Number, required: true },
 
-    emailU: { type: String, required: true },
-    emailP: { type: String, required: true },
-    productId: { type: String, required: true },
+    emailU: { type: String, required: false },
+    emailP: { type: String, required: false },
+    productId: { type: String, required: false },
 
     profileData: {
         firstName: { type: String, require: false },
@@ -66,4 +66,5 @@ const Review = new Schema({
 { versionKey: false });
 
 module.exports = mongoose.model('Review', Review);
-/* FIN 1.2 */
+
+/* FIN 1.3 */
