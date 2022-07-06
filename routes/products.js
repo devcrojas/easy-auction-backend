@@ -34,6 +34,7 @@ router.get('/', async (req, res) => {
 // AGREGAR un nuevo producto
 router.post('/', fields, async (req, res, next) => {
   try{
+    console.log(req.body);
     //Se relaciona el email con la bd de profile y encuentra la coincidencia
     let sellerObject = await Profile.aggregate([{ $match: { email: req.body.email } }]);
     let filesArray = [];
