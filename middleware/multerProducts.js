@@ -1,10 +1,8 @@
 const multer = require('multer');
 
-let noUserImage = "noUserImage.jpg"
-
-const storage = multer.diskStorage({
+const storageProducts = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads');
+        cb(null, 'uploads/products');
     },
     filename: (req, file, cb) => {
         cb(null, new Date().toISOString().replace(/:/g, '-') + '-' + file.originalname);
@@ -25,7 +23,7 @@ const filefilter = (req, file, cb) => {
 }
 
 
-const upload = multer({storage: storage, fileFilter: filefilter});
+const upload = multer({storage: storageProducts, fileFilter: filefilter});
 
 module.exports = {upload};
 
