@@ -55,7 +55,7 @@ router.post('/', multer.upload.single('file'), async (req, res, next) => {
     if (typeof req.file === "undefined") {
       profile.file = {
         fileName: 'noUserImage.jpg',
-        filePath: 'uploads\\noUserImage.jpg',
+        filePath: 'uploads\\profiles\\noUserImage.jpg',
         fileType: 'image/jpeg',
         fileSize: fileSizeFormatter(8364, 2)
       };

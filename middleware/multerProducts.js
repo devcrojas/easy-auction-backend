@@ -8,8 +8,6 @@ let numFl = fl.length;
 const storageProducts = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, 'uploads/products');
-        
-        
     },
     filename: (req, file, cb) => {
         let numI = ++numFl
