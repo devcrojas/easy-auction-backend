@@ -1,13 +1,20 @@
 const multer = require('multer');
+const fs = require('fs');
+const path = require('path');
 
-let noUserImage = "noUserImage.jpg"
+let fl = fs.readdirSync('uploads/profiles');
+let numFl = fl.length;
+//let noUserImage = "noUserImage.jpg"
 
 const storageProfiles = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, 'uploads/profiles');
     },
     filename: (req, file, cb) => {
-        cb(null, new Date().toISOString().replace(/:/g, '-') + '-' + file.originalname);
+        let numI = ++numFl
+        let st = numI.toString();
+        //console.log(st);
+        cb(null, Date.now() + st + path.extname(file.originalname));
         /* if(!file) {
             cb(null, new Date().toISOString().replace(/:/g, '-') + '-' + noUserImage);
         } else {
