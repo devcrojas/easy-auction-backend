@@ -86,7 +86,7 @@ router.post('/', multer.upload.single('file'), async (req, res, next) => {
 
 // ACTUALIZAR perfil
 router.put('/:id', verifyToken, multer.upload.single('file'), async (req, res, next) => {
-  jwt.verify(req.token, process.env.TOKEN_SECRET, (err, user) => {
+  jwt.verify(req.token, process.env.TOKEN_SECRET, async (err, user) => {
     if (err) {
       return res.sendStatus(403);
     } else {
@@ -125,7 +125,7 @@ router.put('/:id', verifyToken, multer.upload.single('file'), async (req, res, n
 
 // ACTUALIZAR imagen de perfil
 router.put('/image/:id', verifyToken, multer.upload.single('file'), async (req, res, next) => {
-  jwt.verify(req.token, process.env.TOKEN_SECRET, (err, user) => {
+  jwt.verify(req.token, process.env.TOKEN_SECRET, async (err, user) => {
     if (err) {
       return res.sendStatus(403);
     } else {
