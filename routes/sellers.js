@@ -5,7 +5,7 @@ const router = express.Router();
 // Seller Model
 const Seller = require('../model/seller');
 // Service Multer
-const multer = require('../middleware/multer')
+const multer = require('../middleware/multerProducts')
 
 
 // OBTENER UN SOLO vendedor

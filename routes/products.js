@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 
-// Producto Model
+// Models
 const Product = require('../model/product');
 const Profile = require('../model/profile');
 // Service Multer
-const multer = require('../middleware/multer')
+const multer = require('../middleware/multerProducts')
 
 // Fields
 const fields = multer.upload.fields([{ name: 'file', maxCount: 1 }, { name: 'files', maxCount: 6 }])
@@ -95,6 +95,22 @@ router.post('/', fields, async (req, res, next) => {
     res.status(400).send(error.message);
   }
 });
+
+// Actualizar campo offered de algun producto
+router.put('/offered/:id', async (req, res, next) => {
+  try{
+    const updateOfferedProduct = {
+      price:{
+        offered:req.body.offered
+      }
+    };
+    
+    await Product.findByIdAndUpdate(req.params.id, updateOfferedProduct);
+    res.status(201).send('Successfully Offered Upgraded Products!');
+  }catch(error) {
+    res.status(400).send('No se actualizo la oferta correctamente.');
+  }
+})
 
 
 // ACTUALIZAR a nuevo producto
