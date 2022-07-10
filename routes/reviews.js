@@ -30,11 +30,13 @@ router.get('/', async (req, res) => {
 
 // AGREGAR reseña
 router.post('/', async (req, res) => {
+  //console.log(req.body);
   try {
     let userObject = await Profile.aggregate([{ $match: { _id: req.body.emailU } }]);
     let profileObject = await Profile.aggregate([{ $match: { email: req.body.emailP } }]);
     let productObject = await Product.find();
     let productFilter = productObject.filter((prod) => {return prod._id == req.body.productId});
+    //console.log(productFilter);
     const review = {
       userData:{
         name:userObject[0].name,
@@ -58,12 +60,12 @@ router.post('/', async (req, res) => {
         }
       },
       productData:{
-        nameProduct:productObject[0].nameProduct,
+        nameProduct:productFilter[0].nameProduct,
         file:{
-          fileName: productObject[0].file.fileName,
-          filePath: productObject[0].file.filePath,
-          fileType: productObject[0].file.fileType,
-          fileSize: productObject[0].file.fileSize
+          fileName: productFilter[0].file.fileName,
+          filePath: productFilter[0].file.filePath,
+          fileType: productFilter[0].file.fileType,
+          fileSize: productFilter[0].file.fileSize
         }
       }
     };
