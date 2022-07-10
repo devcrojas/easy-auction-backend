@@ -58,12 +58,12 @@ router.post('/', async (req, res) => {
         }
       },
       productData:{
-        nameProduct:productObject[0].nameProduct,
+        nameProduct:productFilter[0].nameProduct,
         file:{
-          fileName: productObject[0].file.fileName,
-          filePath: productObject[0].file.filePath,
-          fileType: productObject[0].file.fileType,
-          fileSize: productObject[0].file.fileSize
+          fileName: productFilter[0].file.fileName,
+          filePath: productFilter[0].file.filePath,
+          fileType: productFilter[0].file.fileType,
+          fileSize: productFilter[0].file.fileSize
         }
       }
     };
