@@ -96,6 +96,36 @@ router.post('/', fields, async (req, res, next) => {
   }
 });
 
+// Actualizar campo offered de algun producto
+router.put('/offered/:id', async (req, res, next) => {
+  try{
+    const updateOfferedProduct = {
+      price:{
+        offered:req.body.offered
+      }
+    };
+    
+    await Product.findByIdAndUpdate(req.params.id, updateOfferedProduct);
+    res.status(201).send('Successfully Offered Upgraded Products!');
+  }catch(error) {
+    res.status(400).send('No se actualizo la oferta correctamente.');
+  }
+});
+
+// Actualizar campo status de algun producto
+router.put('/status/:id', async (req, res, next) => {
+  try{
+    const updateStatusProduct = {
+      status:req.body.status
+    };
+    
+    await Product.findByIdAndUpdate(req.params.id, updateStatusProduct);
+    res.status(201).send('Successfully status Upgraded Products!');
+  }catch(error) {
+    res.status(400).send('No se actualizo el status correctamente.');
+  }
+});
+
 
 // ACTUALIZAR a nuevo producto
 router.put('/:id', fields, async (req, res, next) => {

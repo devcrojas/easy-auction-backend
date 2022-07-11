@@ -55,7 +55,7 @@ router.post('/', multer.upload.single('file'), async (req, res, next) => {
     if (typeof req.file === "undefined") {
       profile.file = {
         fileName: 'noUserImage.jpg',
-        filePath: 'uploads\\noUserImage.jpg',
+        filePath: 'uploads\\profiles\\noUserImage.jpg',
         fileType: 'image/jpeg',
         fileSize: fileSizeFormatter(8364, 2)
       };
@@ -120,6 +120,32 @@ router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
     }
   });
 });
+
+/* router.put('/:id', verifyToken, multer.upload.single('file'), async (req, res, next) => {
+  try{
+    //console.log(req.body.profile);
+    //console.log(user.profile);
+    const updateProfile = {
+      firstName:user.profile.firstName,
+      lastName:user.profile.lastName,
+      birthday:user.profile.birthday,
+      address:{
+        cpp:user.profile.address.cpp,
+        street:user.profile.address.street,
+        suburb:user.profile.address.suburb,
+        municipaly:user.profile.address.municipaly,
+        state:user.profile.address.state
+      },
+      phone:user.profile.phone,
+      email:user.profile.email
+    };
+
+    await Profile.findByIdAndUpdate(req.params.id, updateProfile);
+    res.status(201).send('Successfully Upgraded Profile!');
+  }catch(error) {
+    res.status(400).send(error.message);
+  }
+}); */
 
 // ACTUALIZAR imagen de perfil
 router.put('/image/:id', verifyToken, multer.upload.single('file'), async (req, res, next) => {
