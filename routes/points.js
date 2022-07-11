@@ -26,7 +26,12 @@ router.get('/:id', validateSession(), async (req, res, next) => {
     try {
         let userPoints = await Points.aggregate([{$match: {user: req.params.id} }]);
         //console.log(userPoints);
-        res.json(userPoints);
+        if(userPoints.length === 0){
+            let insert = await Points.create({user: req.params.id, pts: 0});
+            console.log(insert);
+            res.json([{user: req.params.id, pts: 0}]);
+        }else
+            res.json(userPoints);
         
     } catch (e){
         console.log(e);
