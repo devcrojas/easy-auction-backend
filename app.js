@@ -9,6 +9,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var authRouter = require('./routes/auth');
 var middlewareAuth = require('./middleware/auth');
+var points = require('./routes/points');
 const mongoose = require('mongoose');
 var middlewareAuthClass = new middlewareAuth();
 
