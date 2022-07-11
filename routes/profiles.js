@@ -85,37 +85,35 @@ router.post('/', multer.upload.single('file'), async (req, res, next) => {
 });
 
 // ACTUALIZAR perfil
-router.put('/:id', verifyToken, multer.upload.single('file'), async (req, res, next) => {
-  jwt.verify(req.token, process.env.TOKEN_SECRET, async (err, user) => {
+router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
+  jwt.verify(req.body.token, process.env.TOKEN_SECRET, async (err, user) => {
     if (err) {
       return res.sendStatus(403);
     } else {
       //console.log(user);
       try{
-        //console.log(req.body.profile);
         //console.log(user.profile);
+        let token = jwt.decode(req.body.token);
         const updateProfile = {
-          firstName:user.profile.firstName,
-          lastName:user.profile.lastName,
-          birthday:user.profile.birthday,
+          firstName:req.body.profile.firstName,
+          lastName:req.body.profile.lastName,
+          birthday:req.body.profile.birthday,
           address:{
-            cpp:user.profile.address.cpp,
-            street:user.profile.address.street,
-            suburb:user.profile.address.suburb,
-            municipaly:user.profile.address.municipaly,
-            state:user.profile.address.state
+            cpp:req.body.profile.address.cpp,
+            street:req.body.profile.address.street,
+            suburb:req.body.profile.address.suburb,
+            municipaly:req.body.profile.address.municipaly,
+            state:req.body.profile.address.state
           },
-          phone:user.profile.phone,
-          email:user.profile.email
+          phone:req.body.profile.phone,
+          email:req.body.profile.email
         };
     
         await Profile.findByIdAndUpdate(req.params.id, updateProfile);
-        res.status(201).send('Successfully Upgraded Profile!');
-
         const getProfile = await Profile.findById(req.params.id);
-        jwt.sign({ getProfile }, process.env.TOKEN_SECRET, (err, token) => {
-          res.json({ token })
-        });
+        token.profile = getProfile;
+        let newToken = jwt.sign(token, process.env.TOKEN_SECRET);
+        res.status(201).send(newToken);
       }catch(error) {
         res.status(400).send(error.message);
       }
