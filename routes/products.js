@@ -81,7 +81,7 @@ router.put('/offered/:id', async (req, res, next) => {
   try{
     const updateOfferedProduct = {
       price:{
-        offered:req.body.offered
+        offered:req.body.price.offered
       }
     };
     
