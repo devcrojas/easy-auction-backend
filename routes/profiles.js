@@ -123,32 +123,6 @@ router.put('/:id', verifyToken, multer.upload.single('file'), async (req, res, n
   });
 });
 
-/* router.put('/:id', verifyToken, multer.upload.single('file'), async (req, res, next) => {
-  try{
-    //console.log(req.body.profile);
-    //console.log(user.profile);
-    const updateProfile = {
-      firstName:user.profile.firstName,
-      lastName:user.profile.lastName,
-      birthday:user.profile.birthday,
-      address:{
-        cpp:user.profile.address.cpp,
-        street:user.profile.address.street,
-        suburb:user.profile.address.suburb,
-        municipaly:user.profile.address.municipaly,
-        state:user.profile.address.state
-      },
-      phone:user.profile.phone,
-      email:user.profile.email
-    };
-
-    await Profile.findByIdAndUpdate(req.params.id, updateProfile);
-    res.status(201).send('Successfully Upgraded Profile!');
-  }catch(error) {
-    res.status(400).send(error.message);
-  }
-}); */
-
 // ACTUALIZAR imagen de perfil
 router.put('/image/:id', verifyToken, multer.upload.single('file'), async (req, res, next) => {
   jwt.verify(req.token, process.env.TOKEN_SECRET, async (err, user) => {
@@ -219,5 +193,32 @@ const fileSizeFormatter = (bytes, decimal) => {
   const index = Math.floor(Math.log(bytes) / Math.log(1000));
   return parseFloat((bytes / Math.pow(1000, index)).toFixed(dm)) + ' ' + sizes[index];
 }
+
+/* Para pruebas rapidas 
+  router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
+  try{
+    //console.log(req.body.profile);
+    //console.log(user.profile);
+    const updateProfile = {
+      firstName:req.body.firstName,
+      lastName:req.body.lastName,
+      birthday:req.body.birthday,
+      address:{
+        cpp:req.body.cpp,
+        street:req.body.street,
+        suburb:req.body.suburb,
+        municipaly:req.body.municipaly,
+        state:req.body.state
+      },
+      phone:req.body.phone,
+      email:req.body.email
+    };
+
+    await Profile.findByIdAndUpdate(req.params.id, updateProfile);
+    res.status(201).send('Successfully Upgraded Profile!');
+  }catch(error) {
+    res.status(400).send(error.message);
+  }
+}); */
 
 module.exports = router;
