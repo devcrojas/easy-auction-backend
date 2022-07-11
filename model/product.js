@@ -57,7 +57,7 @@ const Product = new Schema({
         phone: { type: String, require: false },
         email: { type: String, required: false },
         password: { type: String, required: false},
-        status: { type: String, default:'Active', required: false },
+        status: { type: String, default:'Inactive', required: false },
         file: {
             fileName: {
                 type: String,
