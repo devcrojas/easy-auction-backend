@@ -110,7 +110,21 @@ router.put('/offered/:id', async (req, res, next) => {
   }catch(error) {
     res.status(400).send('No se actualizo la oferta correctamente.');
   }
-})
+});
+
+// Actualizar campo status de algun producto
+router.put('/status/:id', async (req, res, next) => {
+  try{
+    const updateStatusProduct = {
+      status:req.body.status
+    };
+    
+    await Product.findByIdAndUpdate(req.params.id, updateStatusProduct);
+    res.status(201).send('Successfully status Upgraded Products!');
+  }catch(error) {
+    res.status(400).send('No se actualizo el status correctamente.');
+  }
+});
 
 
 // ACTUALIZAR a nuevo producto

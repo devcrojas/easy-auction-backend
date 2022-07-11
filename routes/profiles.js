@@ -123,6 +123,32 @@ router.put('/:id', verifyToken, multer.upload.single('file'), async (req, res, n
   });
 });
 
+/* router.put('/:id', verifyToken, multer.upload.single('file'), async (req, res, next) => {
+  try{
+    //console.log(req.body.profile);
+    //console.log(user.profile);
+    const updateProfile = {
+      firstName:user.profile.firstName,
+      lastName:user.profile.lastName,
+      birthday:user.profile.birthday,
+      address:{
+        cpp:user.profile.address.cpp,
+        street:user.profile.address.street,
+        suburb:user.profile.address.suburb,
+        municipaly:user.profile.address.municipaly,
+        state:user.profile.address.state
+      },
+      phone:user.profile.phone,
+      email:user.profile.email
+    };
+
+    await Profile.findByIdAndUpdate(req.params.id, updateProfile);
+    res.status(201).send('Successfully Upgraded Profile!');
+  }catch(error) {
+    res.status(400).send(error.message);
+  }
+}); */
+
 // ACTUALIZAR imagen de perfil
 router.put('/image/:id', verifyToken, multer.upload.single('file'), async (req, res, next) => {
   jwt.verify(req.token, process.env.TOKEN_SECRET, async (err, user) => {
