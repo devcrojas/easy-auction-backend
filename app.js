@@ -46,6 +46,7 @@ app.use('/api/profiles', require('./routes/profiles'));
 app.use('/api/reviews', require('./routes/reviews'));
 app.use('/api/products', require('./routes/products'));
 app.use('/api/sellers', require('./routes/sellers'));
+app.use('/api/points', require('./routes/points'));
 app.use('/api/auth', authRouter);
 
 // catch 404 and forward to error handler
