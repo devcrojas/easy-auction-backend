@@ -41,7 +41,8 @@ const Product = new Schema({
     },
     files: [Object],
     email: {
-        type: String
+        type: String,
+        ref: 'Profile'
     }
 },
 { versionKey: false });

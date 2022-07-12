@@ -67,7 +67,7 @@ router.put('/:id', async (req, res) => {
     //let userObject = await Profile.aggregate([{ $match: { email: req.body.emailU } }]);
     //let profileObject = await Profile.aggregate([{ $match: { email: req.body.emailP } }]);
 
-    const updateReviews = {
+    const updateReview = {
       comment:req.body.comment,
       type:req.body.type,
       stars:req.body.stars,
@@ -75,7 +75,7 @@ router.put('/:id', async (req, res) => {
       emailP:req.body.emailP,
       productId:req.body.productId
     };
-    await Review.findByIdAndUpdate(req.params.id, updateReviews);
+    await Review.findByIdAndUpdate(req.params.id, updateReview);
     res.status(201).send('Successfully Upgraded Review!');
     /* if (Product.findByIdAndUpdate(req.params.id, newProduct) == true)
       res.json({status: 1, mssg: 'Product Updated'});
