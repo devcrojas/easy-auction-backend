@@ -130,7 +130,7 @@ router.put('/image/:id', verifyToken, multer.upload.single('file'), async (req, 
       return res.sendStatus(403);
     } else {
       //console.log(user);
-      if(req.file && req.file.originalname){
+      if(user.profile.file){
         try{
           //console.log(req.body.profile);
           //console.log(user.profile);
@@ -139,7 +139,7 @@ router.put('/image/:id', verifyToken, multer.upload.single('file'), async (req, 
             fileName: user.profile.file.originalname,
             filePath: user.profile.file.path,
             fileType: user.profile.file.mimetype,
-            fileSize: fileSizeFormatter(user.profilefile.size, 2) // 0.00
+            fileSize: fileSizeFormatter(user.profile.file.size, 2) // 0.00
           }
           await Profile.findByIdAndUpdate(req.params.id, updateFileProfile);
           res.status(201).send('Successfully Upgraded Image Profile!');
@@ -157,6 +157,29 @@ router.put('/image/:id', verifyToken, multer.upload.single('file'), async (req, 
     }
   });
 });
+
+/* router.put('/image/:id', multer.upload.single('file'), async (req, res, next) => {
+  if(req.file && req.file.originalname){
+    try{
+      //console.log(req.body.profile);
+      //console.log(user.profile);
+      const updateFileProfile = { };
+      updateFileProfile.file = {
+        fileName: req.file.originalname,
+        filePath: req.file.path,
+        fileType: req.file.mimetype,
+        fileSize: fileSizeFormatter(req.file.size, 2) // 0.00
+      }
+      await Profile.findByIdAndUpdate(req.params.id, updateFileProfile);
+      res.status(201).send('Successfully Upgraded Image Profile!');
+      
+    }catch(error) {
+      res.status(400).send(error.message);
+    }
+  } else {
+    res.json({ status: -1, mssg: "No se detecto ninguna imagen" });
+  }
+}); */
 
 // ELIMINAR un perfil
 router.delete('/:id', async (req, res) => {
@@ -193,5 +216,32 @@ const fileSizeFormatter = (bytes, decimal) => {
   const index = Math.floor(Math.log(bytes) / Math.log(1000));
   return parseFloat((bytes / Math.pow(1000, index)).toFixed(dm)) + ' ' + sizes[index];
 }
+
+/* Para pruebas rapidas 
+  router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
+  try{
+    //console.log(req.body.profile);
+    //console.log(user.profile);
+    const updateProfile = {
+      firstName:req.body.firstName,
+      lastName:req.body.lastName,
+      birthday:req.body.birthday,
+      address:{
+        cpp:req.body.cpp,
+        street:req.body.street,
+        suburb:req.body.suburb,
+        municipaly:req.body.municipaly,
+        state:req.body.state
+      },
+      phone:req.body.phone,
+      email:req.body.email
+    };
+
+    await Profile.findByIdAndUpdate(req.params.id, updateProfile);
+    res.status(201).send('Successfully Upgraded Profile!');
+  }catch(error) {
+    res.status(400).send(error.message);
+  }
+}); */
 
 module.exports = router;
