@@ -9,6 +9,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var authRouter = require('./routes/auth');
 var middlewareAuth = require('./middleware/auth');
+var points = require('./routes/points');
 const mongoose = require('mongoose');
 var middlewareAuthClass = new middlewareAuth();
 
@@ -45,6 +46,7 @@ app.use('/api/profiles', require('./routes/profiles'));
 app.use('/api/reviews', require('./routes/reviews'));
 app.use('/api/products', require('./routes/products'));
 app.use('/api/sellers', require('./routes/sellers'));
+app.use('/api/points', require('./routes/points'));
 app.use('/api/auth', authRouter);
 
 // catch 404 and forward to error handler

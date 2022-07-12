@@ -45,6 +45,7 @@ router.post('/', fields, async (req, res, next) => {
     const product = {
       nameProduct:req.body.nameProduct, category:req.body.category,
       description:{ material:req.body.material, marca:req.body.marca, dimensions:req.body.dimensions, actualCondition:req.body.actualCondition, observations:req.body.observations },
+      status: 'inactive',
       price:{ initialP:req.body.initialP, buyNow:req.body.buyNow, offered:req.body.offered },
       auctionDate:{ initialD:req.body.initialD, final:req.body.final },
       file:{
@@ -98,7 +99,6 @@ router.put('/status/:id', async (req, res, next) => {
     const updateStatusProduct = {
       status:req.body.status
     };
-    
     await Product.findByIdAndUpdate(req.params.id, updateStatusProduct);
     res.status(201).send('Successfully status Upgraded Products!');
   }catch(error) {
