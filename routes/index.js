@@ -37,11 +37,11 @@ router.post('/user/register', function (req, res, next) {
 /*  */
 
 /* GET home page. */
-router.get('/', function (req, res, next) {
+/*/router.get('/', function (req, res, next) {
   //.......Algoritmo
   //res.send("Respuesta del algorimo")
   res.render('index');
-});
+});/*/
 
 
 router.post("/login", async function (req, res, next) {
