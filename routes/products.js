@@ -19,7 +19,7 @@ router.get('/:id', async (req, res) => {
     ]);
     res.status(200).send(getProduct);
   } catch (error) {
-    res.status(400).send(error.message);
+    res.status(400).json({status: -1, mssg: error.message});
   }
 });
 
@@ -31,7 +31,7 @@ router.get('/', async (req, res) => {
     ]);
     res.status(200).send(getProducts);
   }catch(error) {
-    res.status(400).send(error.message);
+    res.status(400).json({status: -1, mssg: error.message});
 }
 });
 
@@ -47,6 +47,7 @@ router.post('/', fields, async (req, res, next) => {
       description:{ material:req.body.material, marca:req.body.marca, dimensions:req.body.dimensions, actualCondition:req.body.actualCondition, observations:req.body.observations },
       price:{ initialP:req.body.initialP, buyNow:req.body.buyNow, offered:req.body.offered },
       auctionDate:{ initialD:req.body.initialD, final:req.body.final },
+      status: 'inactive',
       file:{
         fileName: req.files['file'][0].originalname,
         filePath: req.files['file'][0].path,
@@ -72,7 +73,7 @@ router.post('/', fields, async (req, res, next) => {
     await addProducts.save();
     res.status(201).send('Products Successfully Added!');
   }catch(error) {
-    res.status(400).send(error.message);
+    res.status(400).json({status: -1, mssg: error.message});
   }
 });
 
@@ -81,12 +82,12 @@ router.put('/offered/:id', async (req, res, next) => {
   try{
     const updateOfferedProduct = {
       price:{
-        offered:req.body.price.offered
+        offered:req.body.offered
       }
     };
     
-    await Product.findByIdAndUpdate(req.params.id, updateOfferedProduct);
-    res.status(201).send('Successfully Offered Upgraded Products!');
+    let update = await Product.updateOne({_id : req.params.id} ,{ $set : updateOfferedProduct});
+    res.status(201).json({ status: 1, mssg: 'Successfully Offered Upgraded Products!', update: update } );
   }catch(error) {
     res.status(400).send('No se actualizo la oferta correctamente.');
   }
@@ -98,11 +99,11 @@ router.put('/status/:id', async (req, res, next) => {
     const updateStatusProduct = {
       status:req.body.status
     };
-    
-    await Product.findByIdAndUpdate(req.params.id, updateStatusProduct);
-    res.status(201).send('Successfully status Upgraded Products!');
+    let update = await Product.updateOne({_id : req.params.id} ,{ $set : updateStatusProduct});
+    res.status(200).json({ status: 1, mssg: 'Successfully Status Upgraded Products!', update: update } );
   }catch(error) {
-    res.status(400).send('No se actualizo el status correctamente.');
+    console.log(error);
+    res.status(401).json({status: -1, mssg: error.message});
   }
 });
 
@@ -142,7 +143,7 @@ router.put('/:id', fields, async (req, res, next) => {
     await Product.findByIdAndUpdate(req.params.id, updateProduct);
     res.status(201).send('Successfully Upgraded Products!');
   }catch(error) {
-    res.status(400).send(error.message);
+    res.status(400).json({status: -1, mssg: error.message});
   }
   /* if (Product.findByIdAndUpdate(req.params.id, newProduct) == true)
     res.json({status: 1, mssg: 'Product Updated'});
@@ -160,7 +161,7 @@ router.delete('/:id', async (req, res) => {
     else (Product.findByIdAndRemove(req.params.id) == false)
       res.json({status: -1, mssg: 'Product Not Deleted'}); */
   } catch (error) {
-    res.status(400).send(error.message);
+    res.status(400).json({status: -1, mssg: error.message});
   }
 });
 
@@ -177,4 +178,4 @@ const fileSizeFormatter = (bytes, decimal) => {
 
 module.exports = router;
 
-/* FIN 1.3 */
+/* FIN 1.1 */

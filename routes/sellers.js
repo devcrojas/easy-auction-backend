@@ -14,7 +14,7 @@ router.get('/:id', async (req, res) => {
     const getSeller = await Seller.findById(req.params.id);
     res.status(200).send(getSeller);
   } catch (error) {
-    res.status(400).send(error.message);
+    res.status(400).json({status: -1, mssg: error.message});
   }
 });
 
@@ -24,7 +24,7 @@ router.get('/', async (req, res) => {
     const getSeller = await Seller.find();
     res.status(200).send(getSeller);
   }catch(error) {
-    res.status(400).send(error.message);
+    res.status(400).json({status: -1, mssg: error.message});
   }
 });
 
@@ -51,7 +51,7 @@ router.post('/', multer.upload.single('file'), async (req, res, next) => {
     await addSeller.save();
     res.status(201).send('Seller Successfully Added!');
   }catch(error) {
-    res.status(400).send(error.message);
+    res.status(400).json({status: -1, mssg: error.message});
   }
 });
 
@@ -77,7 +77,7 @@ router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
     await Seller.findByIdAndUpdate(req.params.id, updateProfile);
     res.status(201).send('Successfully Upgraded Seller!');
   }catch(error) {
-    res.status(400).send(error.message);
+    res.status(400).json({status: -1, mssg: error.message});
   }
 });
 
@@ -91,7 +91,7 @@ router.delete('/:id', async (req, res) => {
     else (Product.findByIdAndRemove(req.params.id) == false)
       res.json({status: -1, mssg: 'Product Not Deleted'}); */
   } catch (error) {
-    res.status(400).send(error.message);
+    res.status(400).json({status: -1, mssg: error.message});
   }
 });
 

@@ -16,7 +16,7 @@ router.get('/:id', async (req, res) => {
     res.send(getProfile);
     res.status(200);
   } catch (error) {
-    res.status(400).send('Perfil aun no creado');
+    res.status(400).json({status: -1, mssg: 'Perfil aun no creado'});
   }
 });
 
@@ -27,7 +27,7 @@ router.get('/', async (req, res) => {
 
     res.status(200).send(getProfiles);
   } catch (error) {
-    res.status(400).send(error.message);
+    res.status(400).json({status: -1, mssg: error.message});
   }
 });
 
@@ -80,20 +80,20 @@ router.post('/', multer.upload.single('file'), async (req, res, next) => {
     await addProfile.save();
     res.status(201).send('Profile Successfully Added!');
   } catch (error) {
-    res.status(400).send(error.message);
+    res.status(400).json({status: -1, mssg: error.message});
   }
 });
 
 // ACTUALIZAR perfil
-router.put('/:id', verifyToken, multer.upload.single('file'), async (req, res, next) => {
-  jwt.verify(req.token, process.env.TOKEN_SECRET, async (err, user) => {
+/*router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
+   jwt.verify(req.body.token, process.env.TOKEN_SECRET, async (err, user) => {
     if (err) {
       return res.sendStatus(403);
     } else {
       //console.log(user);
       try{
-        //console.log(req.body.profile);
         //console.log(user.profile);
+        let token = jwt.decode(req.body.token);
         const updateProfile = {
           firstName:user.profile.firstName,
           lastName:user.profile.lastName,
@@ -110,60 +110,50 @@ router.put('/:id', verifyToken, multer.upload.single('file'), async (req, res, n
         };
     
         await Profile.findByIdAndUpdate(req.params.id, updateProfile);
-        res.status(201).send('Successfully Upgraded Profile!');
-
         const getProfile = await Profile.findById(req.params.id);
-        jwt.sign({ getProfile }, process.env.TOKEN_SECRET, (err, token) => {
-          res.json({ token })
-        });
+        token.profile = getProfile;
+        let newToken = jwt.sign(token, process.env.TOKEN_SECRET);
+        res.status(201).send(newToken);
       }catch(error) {
         res.status(400).send(error.message);
       }
     }
   });
+}); */
+router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
+  try {
+    //console.log(req.body);
+    //console.log(user.profile);
+    const updateProfile = {
+      firstName: req.body.profile.firstName,
+      lastName: req.body.profile.lastName,
+      birthday: req.body.profile.birthday,
+      address: {
+        cpp: req.body.profile.address.cpp,
+        street: req.body.profile.address.street,
+        suburb: req.body.profile.address.suburb,
+        municipaly: req.body.profile.address.municipaly,
+        state: req.body.profile.address.state
+      },
+      phone: req.body.profile.phone,
+      email: req.body.profile.email
+    };
+
+    await Profile.findByIdAndUpdate(req.params.id, updateProfile);
+    res.status(200).json({ status: 1, mssg: 'Successfully Upgraded Profile!', update: update });
+  } catch (error) {
+    res.status(400).json({status: -1, mssg:error.message});
+  }
 });
 
 // ACTUALIZAR imagen de perfil
-router.put('/image/:id', verifyToken, multer.upload.single('file'), async (req, res, next) => {
-  jwt.verify(req.token, process.env.TOKEN_SECRET, async (err, user) => {
-    if (err) {
-      return res.sendStatus(403);
-    } else {
-      //console.log(user);
-      if(user.profile.file){
-        try{
-          //console.log(req.body.profile);
-          //console.log(user.profile);
-          const updateFileProfile = { };
-          updateFileProfile.file = {
-            fileName: user.profile.file.originalname,
-            filePath: user.profile.file.path,
-            fileType: user.profile.file.mimetype,
-            fileSize: fileSizeFormatter(user.profile.file.size, 2) // 0.00
-          }
-          await Profile.findByIdAndUpdate(req.params.id, updateFileProfile);
-          res.status(201).send('Successfully Upgraded Image Profile!');
-          
-          const getProfile = await Profile.findById(req.params.id);
-          jwt.sign({ getProfile }, process.env.TOKEN_SECRET, (err, token) => {
-            res.json({ token })
-          });
-        }catch(error) {
-          res.status(400).send(error.message);
-        }
-      } else {
-        res.json({ status: -1, mssg: "No se detecto ninguna imagen" });
-      }
-    }
-  });
-});
-
-/* router.put('/image/:id', multer.upload.single('file'), async (req, res, next) => {
-  if(req.file && req.file.originalname){
-    try{
+router.put('/image/:id', multer.upload.single('file'), async (req, res, next) => {
+  //console.log(req.file);
+  if (req.file && req.file.originalname) {
+    try {
       //console.log(req.body.profile);
       //console.log(user.profile);
-      const updateFileProfile = { };
+      const updateFileProfile = {};
       updateFileProfile.file = {
         fileName: req.file.originalname,
         filePath: req.file.path,
@@ -172,14 +162,18 @@ router.put('/image/:id', verifyToken, multer.upload.single('file'), async (req, 
       }
       await Profile.findByIdAndUpdate(req.params.id, updateFileProfile);
       res.status(201).send('Successfully Upgraded Image Profile!');
-      
-    }catch(error) {
-      res.status(400).send(error.message);
+
+      const getProfile = await Profile.findById(req.params.id);
+      jwt.sign({ getProfile }, process.env.TOKEN_SECRET, (err, token) => {
+        res.json({ token })
+      });
+    } catch (error) {
+      res.status(400).json({status: -1, mssg: error.message});
     }
   } else {
     res.json({ status: -1, mssg: "No se detecto ninguna imagen" });
   }
-}); */
+});
 
 // ELIMINAR un perfil
 router.delete('/:id', async (req, res) => {
@@ -191,14 +185,14 @@ router.delete('/:id', async (req, res) => {
     else (Product.findByIdAndRemove(req.params.id) == false)
       res.json({status: -1, mssg: 'Product Not Deleted'}); */
   } catch (error) {
-    res.status(400).send(error.message);
+    res.status(400).json({status: -1, mssg: error.message});
   }
 });
 
 // Authorization: Bearer <token>
 function verifyToken(req, res, next) {
   const headerAuth = req.headers['authorization'];
-  if(typeof headerAuth !== "undefined"){
+  if (typeof headerAuth !== "undefined") {
     const token = headerAuth.split(' ')[1];
     req.token = token;
     next();
@@ -216,32 +210,5 @@ const fileSizeFormatter = (bytes, decimal) => {
   const index = Math.floor(Math.log(bytes) / Math.log(1000));
   return parseFloat((bytes / Math.pow(1000, index)).toFixed(dm)) + ' ' + sizes[index];
 }
-
-/* Para pruebas rapidas 
-  router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
-  try{
-    //console.log(req.body.profile);
-    //console.log(user.profile);
-    const updateProfile = {
-      firstName:req.body.firstName,
-      lastName:req.body.lastName,
-      birthday:req.body.birthday,
-      address:{
-        cpp:req.body.cpp,
-        street:req.body.street,
-        suburb:req.body.suburb,
-        municipaly:req.body.municipaly,
-        state:req.body.state
-      },
-      phone:req.body.phone,
-      email:req.body.email
-    };
-
-    await Profile.findByIdAndUpdate(req.params.id, updateProfile);
-    res.status(201).send('Successfully Upgraded Profile!');
-  }catch(error) {
-    res.status(400).send(error.message);
-  }
-}); */
 
 module.exports = router;
