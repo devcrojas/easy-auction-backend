@@ -38,7 +38,7 @@ mongoose.connect(URI, {useNewUrlParser: true, dbName: "Easy"})
   .then(db => console.log('BD Conectada'))
   .catch(error => console.error(error));
 
-app.use(express.static( path.join(__dirname,"../easy-auction-frontend/build")));
+//app.use(express.static( path.join(__dirname,"../easy-auction-frontend/build")));
 
 // Routes
 app.use('/api/', indexRouter);
@@ -50,11 +50,11 @@ app.use('/api/sellers', require('./routes/sellers'));
 app.use('/api/points', require('./routes/points'));
 app.use('/api/auth', authRouter);
   
-app.get("*", (req, res) => {
+/* app.get("*", (req, res) => {
   res.sendFile(
     path.join(__dirname, "../easy-auction-frontend/build/index.html")
 );
-});
+}); */
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
