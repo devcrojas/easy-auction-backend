@@ -9,13 +9,13 @@ const Review = new Schema({
     type: { type: String, required: true },
     stars: { type: Number, required: true },
 
-    emailU: {
+    userSession: {
         type: String
     },
-    emailP: {
+    profile: {
         type: String
     },
-    productId: {
+    product: {
         type: Schema.Types.ObjectId
     },
     datePublished: { type: String, default: d.toLocaleDateString() }

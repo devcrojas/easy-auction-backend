@@ -11,9 +11,9 @@ const Product = require('../model/product');
 router.get('/:id', async (req, res) => {
   try {
     const getReview = await Review.findById(req.params.id).populate([
-      {path: 'emailU', model: 'Profile'},
-      {path: 'emailP', model: 'Profile'},
-      {path: 'productId', model: 'Product'}
+      {path: 'userSession', model: 'Profile'},
+      {path: 'profile', model: 'Profile'},
+      {path: 'product', model: 'Product'}
     ]);
     res.status(200).send(getReview);
   } catch (error) {
@@ -25,9 +25,9 @@ router.get('/:id', async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     const getReviews = await Review.find().populate([
-      {path: 'emailU', model: 'Profile'},
-      {path: 'emailP', model: 'Profile'},
-      {path: 'productId', model: 'Product'}
+      {path: 'userSession', model: 'Profile'},
+      {path: 'profile', model: 'Profile'},
+      {path: 'product', model: 'Product'}
     ]);
     res.status(200).send(getReviews);
   } catch (error) {
@@ -39,18 +39,18 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   //console.log(req.body);
   try {
-    //let userObject = await Profile.aggregate([{ $match: { _id: req.body.emailU } }]);
-    //let profileObject = await Profile.aggregate([{ $match: { email: req.body.emailP } }]);
+    //let userObject = await Profile.aggregate([{ $match: { _id: req.body.userSession } }]);
+    //let profileObject = await Profile.aggregate([{ $match: { email: req.body.profile }]);
     //let products = await Product.find();
-    //let productObject = products.filter((prod) => {return prod._id == req.body.productId});
+    //let productObject = products.filter((prod) => {return prod._id == req.body.product});
     //console.log(productObject);
     const review = {
       comment:req.body.comment,
       type:req.body.type,
       stars:req.body.stars,
-      emailU:req.body.emailU,
-      emailP:req.body.emailP,
-      productId:req.body.productId
+      userSession:req.body.userSession,
+      profile:req.body.profile,
+      product:req.body.product
     };
   
     const addReviews = new Review(review);
@@ -64,16 +64,13 @@ router.post('/', async (req, res) => {
 // ACTUALIZAR una nueva reseña 
 router.put('/:id', async (req, res) => {
   try {
-    //let userObject = await Profile.aggregate([{ $match: { email: req.body.emailU } }]);
-    //let profileObject = await Profile.aggregate([{ $match: { email: req.body.emailP } }]);
+    //let userObject = await Profile.aggregate([{ $match: { email: req.body.userSession } }]);
+    //let profileObject = await Profile.aggregate([{ $match: { email: req.body.profile } }]);
 
     const updateReview = {
       comment:req.body.comment,
       type:req.body.type,
       stars:req.body.stars,
-      emailU:req.body.emailU,
-      emailP:req.body.emailP,
-      productId:req.body.productId
     };
     await Review.findByIdAndUpdate(req.params.id, updateReview);
     res.status(201).send('Successfully Upgraded Review!');
