@@ -119,10 +119,10 @@ router.put('/status/:id', async (req, res, next) => {
       status:req.body.status
     };
     let update = await Product.updateOne({_id : req.params.id} ,{ $set : updateStatusProduct});
-    res.json({ status: 1, mssg: 'Successfully status Upgraded Products!', update: update } );
+    res.status(200).json({ status: 1, mssg: 'Successfully status Upgraded Products!', update: update } );
   }catch(error) {
     console.log(error);
-    res.json({status: -1, mssg: error.message});
+    res.status(401).json({status: -1, mssg: error.message});
   }
 });
 
