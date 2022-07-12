@@ -15,7 +15,7 @@ const fields = multer.upload.fields([{ name: 'file', maxCount: 1 }, { name: 'fil
 router.get('/:id', async (req, res) => {
   try {
     const getProduct = await Product.findById(req.params.id).populate([
-      {path: 'email', model: 'Profile'}
+      {path: 'profile', model: 'Profile'}
     ]);
     res.status(200).send(getProduct);
   } catch (error) {
@@ -27,7 +27,7 @@ router.get('/:id', async (req, res) => {
 router.get('/', async (req, res) => {
   try{
     const getProducts = await Product.find().populate([
-      {path: 'email', model: 'Profile'}
+      {path: 'profile', model: 'Profile'}
     ]);
     res.status(200).send(getProducts);
   }catch(error) {
@@ -53,7 +53,7 @@ router.post('/', fields, async (req, res, next) => {
         fileType: req.files['file'][0].mimetype,
         fileSize: fileSizeFormatter(req.files['file'][0].size, 2) // 0.00
       },
-      email: req.body.email
+      profile: req.body.profile
     };
     if(req.files['files']) {
       req.files['files'].forEach(element => {
@@ -124,8 +124,7 @@ router.put('/:id', fields, async (req, res, next) => {
         filePath: req.files['file'][0].path,
         fileType: req.files['file'][0].mimetype,
         fileSize: fileSizeFormatter(req.files['file'][0].size, 2) // 0.00
-      },
-      email: req.body.email
+      }
     };
     if(req.files['files']) {
       req.files['files'].forEach(element => {

@@ -8,9 +8,9 @@ const Offer = new Schema({
     offer: { type: Number, required: true },
 
     profile: {
-        type: String,
-        ref: 'Profile'
+        type: String
     },
+    product: String,
     offerDate: { type: String, default: d.toLocaleDateString() }
 },
 { versionKey: false });

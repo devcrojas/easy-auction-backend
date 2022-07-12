@@ -9,7 +9,8 @@ const Offer = require('../model/offer');
 router.get('/:id', async (req, res) => {
   try {
     const getOffer = await Offer.findById(req.params.id).populate([
-      {path: 'profile', model: 'Profile'}
+      {path: 'profile', model: 'Profile'},
+      {path: 'product', model: 'Product'}
     ]);
     res.status(200).send(getOffer);
   } catch (error) {
@@ -21,7 +22,8 @@ router.get('/:id', async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     const getReviews = await Offer.find().populate([
-      {path: 'profile', model: 'Profile'}
+      {path: 'profile', model: 'Profile'},
+      {path: 'product', model: 'Product'}
     ]);
     res.status(200).send(getReviews);
   } catch (error) {
