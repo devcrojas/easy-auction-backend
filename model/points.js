@@ -4,7 +4,9 @@ const { Schema } = mongoose;
 
 const ProdSchema = new Schema({
     user: { type: String, required: false },
-    pts: { type: Number, require: true }
+    pts: { type: Number, require: true },
+    logsIncrement: {type: Array, required: true},
+    logsDecrement: {type: Array, required: true}
 },
 { versionKey: false });
 
