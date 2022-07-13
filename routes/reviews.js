@@ -30,11 +30,13 @@ router.get('/', async (req, res) => {
 
 // AGREGAR reseña
 router.post('/', async (req, res) => {
+  //console.log(req.body);
   try {
     let userObject = await Profile.aggregate([{ $match: { _id: req.body.emailU } }]);
     let profileObject = await Profile.aggregate([{ $match: { email: req.body.emailP } }]);
-    let productObject = await Product.find();
-    let productFilter = productObject.filter((prod) => {return prod._id == req.body.productId});
+    let products = await Product.find();
+    let productObject = products.filter((prod) => {return prod._id == req.body.productId});
+    //console.log(productObject);
     const review = {
       userData:{
         name:userObject[0].name,

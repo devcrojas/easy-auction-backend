@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const Product = new Schema({
+<<<<<<< HEAD
+=======
+    
+>>>>>>> 8c306a1f8fe3d8d9d5af317ca8e34152b2dc50dd
     nameProduct: { type: String, required: true },
     category: { type: String, required: true },
     description: { type: {
@@ -56,7 +60,7 @@ const Product = new Schema({
         phone: { type: String, require: false },
         email: { type: String, required: false },
         password: { type: String, required: false},
-        status: { type: String, default:'Active', required: false },
+        status: { type: String, default:'Inactive', required: false },
         file: {
             fileName: {
                 type: String,

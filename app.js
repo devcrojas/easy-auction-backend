@@ -9,6 +9,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var authRouter = require('./routes/auth');
 var middlewareAuth = require('./middleware/auth');
+var points = require('./routes/points');
 const mongoose = require('mongoose');
 var middlewareAuthClass = new middlewareAuth();
 
@@ -16,7 +17,7 @@ var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug');
+app.set('view engine', 'html');
 
 // MW
 app.use(logger('dev'));
@@ -37,6 +38,7 @@ mongoose.connect(URI, {useNewUrlParser: true, dbName: "Easy"})
   .then(db => console.log('BD Conectada'))
   .catch(error => console.error(error));
 
+app.use(express.static( path.join(__dirname,"../easy-auction-frontend/build")));
 
 // Routes
 app.use('/api/', indexRouter);
@@ -45,8 +47,14 @@ app.use('/api/profiles', require('./routes/profiles'));
 app.use('/api/reviews', require('./routes/reviews'));
 app.use('/api/products', require('./routes/products'));
 app.use('/api/sellers', require('./routes/sellers'));
+app.use('/api/points', require('./routes/points'));
 app.use('/api/auth', authRouter);
-
+  
+app.get("*", (req, res) => {
+  res.sendFile(
+    path.join(__dirname, "../easy-auction-frontend/build/index.html")
+);
+});
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));

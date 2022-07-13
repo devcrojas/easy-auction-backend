@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 
-// Producto Model
+// Models
 const Product = require('../model/product');
 const Profile = require('../model/profile');
 // Service Multer
-const multer = require('../middleware/multer')
+const multer = require('../middleware/multerProducts')
 
 // Fields
 const fields = multer.upload.fields([{ name: 'file', maxCount: 1 }, { name: 'files', maxCount: 6 }])
@@ -42,7 +42,7 @@ router.post('/', fields, async (req, res, next) => {
     const product = {
       nameProduct:req.body.nameProduct, category:req.body.category,
       description:{ material:req.body.material, marca:req.body.marca, dimensions:req.body.dimensions, actualCondition:req.body.actualCondition, observations:req.body.observations },
-      status:req.body.status,
+      status: 'inactive',
       price:{ initialP:req.body.initialP, buyNow:req.body.buyNow, offered:req.body.offered },
       auctionDate:{ initialD:req.body.initialD, final:req.body.final },
       file:{
@@ -94,6 +94,36 @@ router.post('/', fields, async (req, res, next) => {
     res.status(201).send('Products Successfully Added!');
   }catch(error) {
     res.status(400).send(error.message);
+  }
+});
+
+// Actualizar campo offered de algun producto
+router.put('/offered/:id', async (req, res, next) => {
+  try{
+    const updateOfferedProduct = {
+      price:{
+        offered:req.body.offered
+      }
+    };
+    
+    await Product.findByIdAndUpdate(req.params.id, updateOfferedProduct);
+    res.status(201).send('Successfully Offered Upgraded Products!');
+  }catch(error) {
+    res.status(400).send('No se actualizo la oferta correctamente.');
+  }
+});
+
+// Actualizar campo status de algun producto
+router.put('/status/:id', async (req, res, next) => {
+  try{
+    const updateStatusProduct = {
+      status:req.body.status
+    };
+    let update = await Product.updateOne({_id : req.params.id} ,{ $set : updateStatusProduct});
+    res.status(200).json({ status: 1, mssg: 'Successfully status Upgraded Products!', update: update } );
+  }catch(error) {
+    console.log(error);
+    res.status(401).json({status: -1, mssg: error.message});
   }
 });
 

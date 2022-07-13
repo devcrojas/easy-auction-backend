@@ -26,7 +26,7 @@ validateSession = () => {
 router.post('/user/register', function (req, res, next) {
   //.......Algoritmo
   //res.send("Respuesta del algorimo")
-  let insert = { _id: req.body.email, name: req.body.name, firstName: req.body.firstname, email: req.body.email, password: req.body.password, isAdmin: true }
+  let insert = { _id: req.body.email, name: req.body.name, firstName: req.body.firstname, email: req.body.email, password: req.body.password, isAdmin: false }
   var model = new Login(insert);
   model.save(function (err) {
     if (err) return console.log(err);
@@ -37,11 +37,11 @@ router.post('/user/register', function (req, res, next) {
 /*  */
 
 /* GET home page. */
-router.get('/', function (req, res, next) {
+/*/router.get('/', function (req, res, next) {
   //.......Algoritmo
   //res.send("Respuesta del algorimo")
   res.render('index');
-});
+});/*/
 
 
 router.post("/login", async function (req, res, next) {
@@ -65,7 +65,8 @@ router.post("/login", async function (req, res, next) {
           name: login[0].name,
           id: login[0]._id,
           date: new Date(),
-          profile: profile[0]
+          profile: profile[0],
+          isAdmin: login[0].isAdmin
         }, process.env.TOKEN_SECRET)
 
         res.header('auth-token', token).json({
