@@ -27,8 +27,8 @@ router.get('/:id', validateSession(), async (req, res, next) => {
         let userPoints = await Points.aggregate([{$match: {user: req.params.id} }]);
         //console.log(userPoints);
         if(userPoints.length === 0){
-            let insert = await Points.create({user: req.params.id, pts: 0});
-            console.log(insert);
+            let insert = await Points.create({user: req.params.id, pts: 0, logsIncrement : [], logsDecrement: []});
+            //console.log(insert);
             res.json([{user: req.params.id, pts: 0}]);
         }else
             res.json(userPoints);
@@ -43,9 +43,11 @@ router.post('/addPoints', validateSession(), async (req, res, next) => {
     try {
         let userPoints = await Points.aggregate([{$match: {user: req.body.userId} }]);
 
-        let updatePoints = await Points.updateOne({user: req.body.userId},{$set : {pts: (userPoints[0].pts + req.body.pts)} },{upsert: true});
+        let updatePoints = await Points.updateOne({user: req.body.userId},{$set : {pts: (userPoints[0].pts + req.body.pts)} });
+
+        let logPoints = await Points.updateOne({user: req.body.userId},{$push : {logsIncrement: { timestamp: new Date(), qty: req.body.pts, qtyFinal: (userPoints[0].pts + req.body.pts), detailsPaypal: req.body.details }} });
         
-        //console.log(userPoints);
+        console.log(logPoints);
         res.json({status: 1, resp: updatePoints, pts: (userPoints[0].pts + req.body.pts)});
         
     } catch (e){
