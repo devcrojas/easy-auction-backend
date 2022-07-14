@@ -15,7 +15,7 @@ const fields = multer.upload.fields([{ name: 'file', maxCount: 1 }, { name: 'fil
 router.get('/:id', async (req, res) => {
   try {
     const getProduct = await Product.findById(req.params.id).populate([
-      {path: 'profile', model: 'Profile'}
+      {path: 'email', model: 'Profile'}
     ]);
     res.status(200).send(getProduct);
   } catch (error) {
@@ -23,11 +23,39 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// OBTENER TODOS los productos
+// OBTENER TODOS los productos activos (Principal)
 router.get('/', async (req, res) => {
   try{
+    const getProducts = await Product.find({
+      'status': 'active'
+    }).populate([
+      {path: 'email', model: 'Profile'}
+    ]);
+    res.status(200).send(getProducts);
+  }catch(error) {
+    res.status(400).json({status: -1, mssg: error.message});
+}
+});
+
+// OBTENER TODOS los productos
+router.get('/all/products', async (req, res) => {
+  try{
     const getProducts = await Product.find().populate([
-      {path: 'profile', model: 'Profile'}
+      {path: 'email', model: 'Profile'}
+    ]);
+    res.status(200).send(getProducts);
+  }catch(error) {
+    res.status(400).json({status: -1, mssg: error.message});
+}
+});
+
+// Obtener los productos que publico el usuario de la sesion
+router.post('/myproducts', async (req, res) => {
+  try{
+    const getProducts = await Product.find({
+      'email': req.body.email
+    }).populate([
+      {path: 'email', model: 'Profile'}
     ]);
     res.status(200).send(getProducts);
   }catch(error) {

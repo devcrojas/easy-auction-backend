@@ -35,6 +35,22 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Obtener reseñas que hizo el usuario de la sesion
+router.post('/myreviews', async (req, res) => {
+  try {
+    const getMyReviews = await Review.find({
+      'userSession': req.body.userSession
+    }).populate([
+      {path: 'userSession', model: 'Profile', select: '_id'},
+      {path: 'profile', model: 'Profile', select: '_id firstName lastName file'},
+      {path: 'product', model: 'Product', select: '_id nameProduct file'}
+    ]);
+    res.status(200).send(getMyReviews);
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+});
+
 // AGREGAR reseña
 router.post('/', async (req, res) => {
   //console.log(req.body);
