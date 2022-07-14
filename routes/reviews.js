@@ -11,9 +11,9 @@ const Product = require('../model/product');
 router.get('/:id', async (req, res) => {
   try {
     const getReview = await Review.findById(req.params.id).populate([
-      {path: 'userSession', model: 'Profile'},
-      {path: 'profile', model: 'Profile'},
-      {path: 'product', model: 'Product'}
+      {path: 'emailU', model: 'Profile'},
+      {path: 'emailP', model: 'Profile'},
+      {path: 'productId', model: 'Product'}
     ]);
     res.status(200).send(getReview);
   } catch (error) {
@@ -25,9 +25,9 @@ router.get('/:id', async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     const getReviews = await Review.find().populate([
-      {path: 'userSession', model: 'Profile'},
-      {path: 'profile', model: 'Profile'},
-      {path: 'product', model: 'Product'}
+      {path: 'emailU', model: 'Profile'},
+      {path: 'emailP', model: 'Profile'},
+      {path: 'productId', model: 'Product'}
     ]);
     res.status(200).send(getReviews);
   } catch (error) {
@@ -39,11 +39,11 @@ router.get('/', async (req, res) => {
 router.post('/myreviews', async (req, res) => {
   try {
     const getMyReviews = await Review.find({
-      'userSession': req.body.userSession
+      'emailU': req.body.emailU
     }).populate([
-      {path: 'userSession', model: 'Profile', select: '_id'},
-      {path: 'profile', model: 'Profile', select: '_id firstName lastName file'},
-      {path: 'product', model: 'Product', select: '_id nameProduct file'}
+      {path: 'emailU', model: 'Profile', select: '_id'},
+      {path: 'emailP', model: 'Profile', select: '_id firstName lastName file'},
+      {path: 'productId', model: 'Product', select: '_id nameProduct file'}
     ]);
     res.status(200).send(getMyReviews);
   } catch (error) {
@@ -55,7 +55,7 @@ router.post('/myreviews', async (req, res) => {
 router.post('/', async (req, res) => {
   //console.log(req.body);
   try {
-    //let userObject = await Profile.aggregate([{ $match: { _id: req.body.userSession } }]);
+    //let userObject = await Profile.aggregate([{ $match: { _id: req.body.emailU } }]);
     //let profileObject = await Profile.aggregate([{ $match: { email: req.body.profile }]);
     //let products = await Product.find();
     //let productObject = products.filter((prod) => {return prod._id == req.body.product});
@@ -64,9 +64,9 @@ router.post('/', async (req, res) => {
       comment:req.body.comment,
       type:req.body.type,
       stars:req.body.stars,
-      userSession:req.body.userSession,
-      profile:req.body.profile,
-      product:req.body.product
+      emailU:req.body.emailU,
+      emailP:req.body.emailP,
+      productId:req.body.productId
     };
   
     const addReviews = new Review(review);
