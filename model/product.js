@@ -40,7 +40,7 @@ const Product = new Schema({
         }
     },
     files: [Object],
-    profile: {
+    email: {
         type: String
     }
 },
