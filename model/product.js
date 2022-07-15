@@ -2,10 +2,7 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const Product = new Schema({
-<<<<<<< HEAD
-=======
     
->>>>>>> 8c306a1f8fe3d8d9d5af317ca8e34152b2dc50dd
     nameProduct: { type: String, required: true },
     category: { type: String, required: true },
     description: { type: {
