@@ -16,7 +16,7 @@ router.get('/:id', async (req, res) => {
     res.send(getProfile);
     res.status(200);
   } catch (error) {
-    res.status(400).send('Perfil aun no creado');
+    res.status(400).json({status: -1, mssg: 'Perfil aun no creado'});
   }
 });
 
@@ -27,7 +27,7 @@ router.get('/', async (req, res) => {
 
     res.status(200).send(getProfiles);
   } catch (error) {
-    res.status(400).send(error.message);
+    res.status(400).json({status: -1, mssg: error.message});
   }
 });
 
@@ -80,7 +80,7 @@ router.post('/', multer.upload.single('file'), async (req, res, next) => {
     await addProfile.save();
     res.status(201).send('Profile Successfully Added!');
   } catch (error) {
-    res.status(400).send(error.message);
+    res.status(400).json({status: -1, mssg: error.message});
   }
 });
 
@@ -95,18 +95,18 @@ router.post('/', multer.upload.single('file'), async (req, res, next) => {
         //console.log(user.profile);
         let token = jwt.decode(req.body.token);
         const updateProfile = {
-          firstName:req.body.profile.firstName,
-          lastName:req.body.profile.lastName,
-          birthday:req.body.profile.birthday,
+          firstName:user.profile.firstName,
+          lastName:user.profile.lastName,
+          birthday:user.profile.birthday,
           address:{
-            cpp:req.body.profile.address.cpp,
-            street:req.body.profile.address.street,
-            suburb:req.body.profile.address.suburb,
-            municipaly:req.body.profile.address.municipaly,
-            state:req.body.profile.address.state
+            cpp:user.profile.address.cpp,
+            street:user.profile.address.street,
+            suburb:user.profile.address.suburb,
+            municipaly:user.profile.address.municipaly,
+            state:user.profile.address.state
           },
-          phone:req.body.profile.phone,
-          email:req.body.profile.email
+          phone:user.profile.phone,
+          email:user.profile.email
         };
     
         await Profile.findByIdAndUpdate(req.params.id, updateProfile);
@@ -140,15 +140,15 @@ router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
     };
 
     await Profile.findByIdAndUpdate(req.params.id, updateProfile);
-    res.status(201).send('Successfully Upgraded Profile!');
+    res.status(200).json({ status: 1, mssg: 'Successfully Upgraded Profile!', update: update });
   } catch (error) {
-    res.status(400).send(error.message);
+    res.status(400).json({status: -1, mssg:error.message});
   }
 });
 
 // ACTUALIZAR imagen de perfil
 router.put('/image/:id', multer.upload.single('file'), async (req, res, next) => {
-  console.log(req.file);
+  //console.log(req.file);
   if (req.file && req.file.originalname) {
     try {
       //console.log(req.body.profile);
@@ -168,7 +168,7 @@ router.put('/image/:id', multer.upload.single('file'), async (req, res, next) =>
         res.json({ token })
       });
     } catch (error) {
-      res.status(400).send(error.message);
+      res.status(400).json({status: -1, mssg: error.message});
     }
   } else {
     res.json({ status: -1, mssg: "No se detecto ninguna imagen" });
@@ -185,7 +185,7 @@ router.delete('/:id', async (req, res) => {
     else (Product.findByIdAndRemove(req.params.id) == false)
       res.json({status: -1, mssg: 'Product Not Deleted'}); */
   } catch (error) {
-    res.status(400).send(error.message);
+    res.status(400).json({status: -1, mssg: error.message});
   }
 });
 

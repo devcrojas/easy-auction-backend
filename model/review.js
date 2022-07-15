@@ -5,61 +5,18 @@ let = dn = Date.now();
 let d = new Date(dn);
 
 const Review = new Schema({
-    userData: { 
-        name: { type: String, require: false },
-        email: { type: String, required: false }
-     },
     comment: { type: String, required: true },
     type: { type: String, required: true },
     stars: { type: Number, required: true },
 
-    emailU: { type: String, required: false },
-    emailP: { type: String, required: false },
-    productId: { type: String, required: false },
-
-    profileData: {
-        firstName: { type: String, require: false },
-        lastName: { type: String, require: false },
-        email: { type: String, required: false },
-        file: {
-            fileName: {
-                type: String,
-                required: false
-            },
-            filePath: {
-                type: String,
-                required: false
-            },
-            fileType: {
-                type: String,
-                required: false
-            },
-            fileSize: {
-                type: String,
-                required: false
-            }
-        }
+    emailU: {
+        type: String
     },
-    productData: {
-        nameProduct: { type: String, required: false },
-        file: {
-            fileName: {
-                type: String,
-                required: false
-            },
-            filePath: {
-                type: String,
-                required: false
-            },
-            fileType: {
-                type: String,
-                required: false
-            },
-            fileSize: {
-                type: String,
-                required: false
-            }
-        }
+    emailP: {
+        type: String
+    },
+    productId: {
+        type: Schema.Types.ObjectId
     },
     datePublished: { type: String, default: d.toLocaleDateString() }
 },
@@ -67,4 +24,4 @@ const Review = new Schema({
 
 module.exports = mongoose.model('Review', Review);
 
-/* FIN 1.3 */
+/* FIN 1.6 */

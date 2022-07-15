@@ -14,20 +14,52 @@ const fields = multer.upload.fields([{ name: 'file', maxCount: 1 }, { name: 'fil
 // OBTENER UN SOLO producto
 router.get('/:id', async (req, res) => {
   try {
-    const getProduct = await Product.findById(req.params.id);
+    const getProduct = await Product.findById(req.params.id).populate([
+      {path: 'email', model: 'Profile'}
+    ]);
     res.status(200).send(getProduct);
   } catch (error) {
-    res.status(400).send(error.message);
+    res.status(400).json({status: -1, mssg: error.message});
   }
 });
 
-// OBTENER TODOS los productos
+// OBTENER TODOS los productos activos (Principal)
 router.get('/', async (req, res) => {
   try{
-    const getProducts = await Product.find();
+    const getProducts = await Product.find({
+      'status': 'active'
+    }).populate([
+      {path: 'email', model: 'Profile'}
+    ]);
     res.status(200).send(getProducts);
   }catch(error) {
-    res.status(400).send(error.message);
+    res.status(400).json({status: -1, mssg: error.message});
+}
+});
+
+// OBTENER TODOS los productos
+router.get('/all/products', async (req, res) => {
+  try{
+    const getProducts = await Product.find().populate([
+      {path: 'email', model: 'Profile'}
+    ]);
+    res.status(200).send(getProducts);
+  }catch(error) {
+    res.status(400).json({status: -1, mssg: error.message});
+}
+});
+
+// Obtener los productos que publico el usuario de la sesion
+router.post('/myproducts', async (req, res) => {
+  try{
+    const getProducts = await Product.find({
+      'email': req.body.email
+    }).populate([
+      {path: 'email', model: 'Profile'}
+    ]);
+    res.status(200).send(getProducts);
+  }catch(error) {
+    res.status(400).json({status: -1, mssg: error.message});
 }
 });
 
@@ -36,45 +68,22 @@ router.post('/', fields, async (req, res, next) => {
   try{
     console.log(req.body);
     //Se relaciona el email con la bd de profile y encuentra la coincidencia
-    let sellerObject = await Profile.aggregate([{ $match: { email: req.body.email } }]);
+    //let sellerObject = await Profile.aggregate([{ $match: { email: req.body.email } }]);
     let filesArray = [];
 
     const product = {
       nameProduct:req.body.nameProduct, category:req.body.category,
       description:{ material:req.body.material, marca:req.body.marca, dimensions:req.body.dimensions, actualCondition:req.body.actualCondition, observations:req.body.observations },
-      status: 'inactive',
       price:{ initialP:req.body.initialP, buyNow:req.body.buyNow, offered:req.body.offered },
       auctionDate:{ initialD:req.body.initialD, final:req.body.final },
+      status: 'inactive',
       file:{
         fileName: req.files['file'][0].originalname,
         filePath: req.files['file'][0].path,
         fileType: req.files['file'][0].mimetype,
         fileSize: fileSizeFormatter(req.files['file'][0].size, 2) // 0.00
       },
-      email: req.body.email,
-      sellerData: {
-        _id:sellerObject[0].email,
-        firstName:sellerObject[0].firstName,
-        lastName:sellerObject[0].lastName,
-        birthday:sellerObject[0].birthday,
-        address:{
-          cpp: sellerObject[0].address.cpp,
-          stree: sellerObject[0].address.stree,
-          suburb: sellerObject[0].address.suburb,
-          municipaly: sellerObject[0].address.municipaly,
-          state: sellerObject[0].address.state,
-        },
-        phone:sellerObject[0].phone,
-        email:sellerObject[0].email,
-        password:sellerObject[0].password,
-        status:sellerObject[0].status,
-        file:{
-          fileName: sellerObject[0].file.fileName,
-          filePath: sellerObject[0].file.filePath,
-          fileType: sellerObject[0].file.fileType,
-          fileSize: sellerObject[0].file.fileSize
-        }
-      }
+      profile: req.body.profile
     };
     if(req.files['files']) {
       req.files['files'].forEach(element => {
@@ -93,7 +102,7 @@ router.post('/', fields, async (req, res, next) => {
     await addProducts.save();
     res.status(201).send('Products Successfully Added!');
   }catch(error) {
-    res.status(400).send(error.message);
+    res.status(400).json({status: -1, mssg: error.message});
   }
 });
 
@@ -106,8 +115,8 @@ router.put('/offered/:id', async (req, res, next) => {
       }
     };
     
-    await Product.findByIdAndUpdate(req.params.id, updateOfferedProduct);
-    res.status(201).send('Successfully Offered Upgraded Products!');
+    let update = await Product.updateOne({_id : req.params.id} ,{ $set : updateOfferedProduct});
+    res.status(201).json({ status: 1, mssg: 'Successfully Offered Upgraded Products!', update: update } );
   }catch(error) {
     res.status(400).send('No se actualizo la oferta correctamente.');
   }
@@ -120,7 +129,7 @@ router.put('/status/:id', async (req, res, next) => {
       status:req.body.status
     };
     let update = await Product.updateOne({_id : req.params.id} ,{ $set : updateStatusProduct});
-    res.status(200).json({ status: 1, mssg: 'Successfully status Upgraded Products!', update: update } );
+    res.status(200).json({ status: 1, mssg: 'Successfully Status Upgraded Products!', update: update } );
   }catch(error) {
     console.log(error);
     res.status(401).json({status: -1, mssg: error.message});
@@ -132,13 +141,12 @@ router.put('/status/:id', async (req, res, next) => {
 router.put('/:id', fields, async (req, res, next) => {
   try{
     //Se relaciona el email con la bd de profile y encuentra la coincidencia
-    let sellerObject = await Profile.aggregate([{ $match: { email: req.body.email } }]);
+    //let sellerObject = await Profile.aggregate([{ $match: { email: req.body.email } }]);
     let filesArray = [];
 
     const updateProduct = {
       nameProduct:req.body.nameProduct, category:req.body.category,
       description:{ material:req.body.material, marca:req.body.marca, dimensions:req.body.dimensions, actualCondition:req.body.actualCondition, observations:req.body.observations },
-      status:req.body.status,
       price:{ initialP:req.body.initialP, buyNow:req.body.buyNow, offered:req.body.offered },
       auctionDate:{ initialD:req.body.initialD, final:req.body.final },
       file:{
@@ -146,30 +154,6 @@ router.put('/:id', fields, async (req, res, next) => {
         filePath: req.files['file'][0].path,
         fileType: req.files['file'][0].mimetype,
         fileSize: fileSizeFormatter(req.files['file'][0].size, 2) // 0.00
-      },
-      email: req.body.email,
-      sellerData: {
-        _id:sellerObject[0].email,
-        firstName:sellerObject[0].firstName,
-        lastName:sellerObject[0].lastName,
-        birthday:sellerObject[0].birthday,
-        address:{
-          cpp: sellerObject[0].address.cpp,
-          stree: sellerObject[0].address.stree,
-          suburb: sellerObject[0].address.suburb,
-          municipaly: sellerObject[0].address.municipaly,
-          state: sellerObject[0].address.state,
-        },
-        phone:sellerObject[0].phone,
-        email:sellerObject[0].email,
-        password:sellerObject[0].password,
-        status:sellerObject[0].status,
-        file:{
-          fileName: sellerObject[0].file.fileName,
-          filePath: sellerObject[0].file.filePath,
-          fileType: sellerObject[0].file.fileType,
-          fileSize: sellerObject[0].file.fileSize
-        }
       }
     };
     if(req.files['files']) {
@@ -188,7 +172,7 @@ router.put('/:id', fields, async (req, res, next) => {
     await Product.findByIdAndUpdate(req.params.id, updateProduct);
     res.status(201).send('Successfully Upgraded Products!');
   }catch(error) {
-    res.status(400).send(error.message);
+    res.status(400).json({status: -1, mssg: error.message});
   }
   /* if (Product.findByIdAndUpdate(req.params.id, newProduct) == true)
     res.json({status: 1, mssg: 'Product Updated'});
@@ -206,7 +190,7 @@ router.delete('/:id', async (req, res) => {
     else (Product.findByIdAndRemove(req.params.id) == false)
       res.json({status: -1, mssg: 'Product Not Deleted'}); */
   } catch (error) {
-    res.status(400).send(error.message);
+    res.status(400).json({status: -1, mssg: error.message});
   }
 });
 
@@ -223,4 +207,4 @@ const fileSizeFormatter = (bytes, decimal) => {
 
 module.exports = router;
 
-/* FIN 1.1 */
+/* FIN 1.4 */
