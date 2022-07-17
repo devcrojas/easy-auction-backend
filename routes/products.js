@@ -40,10 +40,10 @@ router.get('/', async (req, res) => {
 // OBTENER TODOS los productos
 router.get('/all/products', async (req, res) => {
   try{
-    const getProducts = await Product.find().populate([
+    const getAllProducts = await Product.find().populate([
       {path: 'email', model: 'Profile'}
     ]);
-    res.status(200).send(getProducts);
+    res.status(200).send(getAllProducts);
   }catch(error) {
     res.status(400).json({status: -1, mssg: error.message});
 }
@@ -52,12 +52,26 @@ router.get('/all/products', async (req, res) => {
 // Obtener los productos que publico el usuario de la sesion
 router.post('/myproducts', async (req, res) => {
   try{
-    const getProducts = await Product.find({
+    const getMyProducts = await Product.find({
       'email': req.body.email
+    }).populate([/* Populate opcional */
+      {path: 'email', model: 'Profile'}
+    ]);
+    res.status(200).send(getMyProducts);
+  }catch(error) {
+    res.status(400).json({status: -1, mssg: error.message});
+}
+});
+
+// Obtener los productos que gano o tiene el usuario
+router.post('/myearnedproducts', async (req, res) => {
+  try{
+    const getEarnedProducts = await Product.find({
+      'profileWin': req.body.profileWin
     }).populate([
       {path: 'email', model: 'Profile'}
     ]);
-    res.status(200).send(getProducts);
+    res.status(200).send(getEarnedProducts);
   }catch(error) {
     res.status(400).json({status: -1, mssg: error.message});
 }
