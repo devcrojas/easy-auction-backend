@@ -42,7 +42,8 @@ const Product = new Schema({
     files: [Object],
     email: {
         type: String
-    }
+    },
+    profileWin: String
 },
 { versionKey: false });
 

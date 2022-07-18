@@ -17,7 +17,7 @@ router.get('/:id', async (req, res) => {
     ]);
     res.status(200).send(getReview);
   } catch (error) {
-    res.status(400).send(error.message);
+    res.status(400).json({status: -1, mssg: error.message});
   }
 });
 
@@ -31,6 +31,22 @@ router.get('/', async (req, res) => {
     ]);
     res.status(200).send(getReviews);
   } catch (error) {
+    res.status(400).json({status: -1, mssg: error.message});
+  }
+});
+
+// Obtener reseñas que hizo el usuario de la sesion
+router.post('/myreviews', async (req, res) => {
+  try {
+    const getMyReviews = await Review.find({
+      'emailU': req.body.emailU
+    }).populate([
+      {path: 'emailU', model: 'Profile', select: '_id'},
+      {path: 'emailP', model: 'Profile', select: '_id firstName lastName file'},
+      {path: 'productId', model: 'Product', select: '_id nameProduct file'}
+    ]);
+    res.status(200).send(getMyReviews);
+  } catch (error) {
     res.status(400).send(error.message);
   }
 });
@@ -40,9 +56,9 @@ router.post('/', async (req, res) => {
   //console.log(req.body);
   try {
     //let userObject = await Profile.aggregate([{ $match: { _id: req.body.emailU } }]);
-    //let profileObject = await Profile.aggregate([{ $match: { email: req.body.emailP } }]);
+    //let profileObject = await Profile.aggregate([{ $match: { email: req.body.profile }]);
     //let products = await Product.find();
-    //let productObject = products.filter((prod) => {return prod._id == req.body.productId});
+    //let productObject = products.filter((prod) => {return prod._id == req.body.product});
     //console.log(productObject);
     const review = {
       comment:req.body.comment,
@@ -57,32 +73,29 @@ router.post('/', async (req, res) => {
     await addReviews.save();
     res.status(201).send('Successfully Upgraded Review!');
   } catch (error) {
-    res.status(400).send(error.message);
+    res.status(400).json({status: -1, mssg: error.message});
   }
 });
 
 // ACTUALIZAR una nueva reseña 
 router.put('/:id', async (req, res) => {
   try {
-    //let userObject = await Profile.aggregate([{ $match: { email: req.body.emailU } }]);
-    //let profileObject = await Profile.aggregate([{ $match: { email: req.body.emailP } }]);
+    //let userObject = await Profile.aggregate([{ $match: { email: req.body.userSession } }]);
+    //let profileObject = await Profile.aggregate([{ $match: { email: req.body.profile } }]);
 
-    const updateReviews = {
+    const updateReview = {
       comment:req.body.comment,
       type:req.body.type,
       stars:req.body.stars,
-      emailU:req.body.emailU,
-      emailP:req.body.emailP,
-      productId:req.body.productId
     };
-    await Review.findByIdAndUpdate(req.params.id, updateReviews);
+    await Review.findByIdAndUpdate(req.params.id, updateReview);
     res.status(201).send('Successfully Upgraded Review!');
     /* if (Product.findByIdAndUpdate(req.params.id, newProduct) == true)
       res.json({status: 1, mssg: 'Product Updated'});
     else (Product.findByIdAndUpdate(req.params.id, newProduct) == false)
       res.json({status: -1, mssg: 'Product Not Updated'}); */
   } catch (error) {
-    res.status(400).send(error.message);
+    res.status(400).json({status: -1, mssg: error.message});
   }
 });
 
@@ -96,7 +109,7 @@ router.delete('/:id', async (req, res) => {
     else (Product.findByIdAndRemove(req.params.id) == false)
       res.json({status: -1, mssg: 'Product Not Deleted'}); */
   } catch (error) {
-    res.status(400).send(error.message);
+    res.status(400).json({status: -1, mssg: error.message});
   }
 });
 

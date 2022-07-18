@@ -19,19 +19,61 @@ router.get('/:id', async (req, res) => {
     ]);
     res.status(200).send(getProduct);
   } catch (error) {
-    res.status(400).send(error.message);
+    res.status(400).json({status: -1, mssg: error.message});
   }
 });
 
-// OBTENER TODOS los productos
+// OBTENER TODOS los productos activos (Principal)
 router.get('/', async (req, res) => {
   try{
-    const getProducts = await Product.find().populate([
+    const getProducts = await Product.find({
+      'status': 'active'
+    }).populate([
       {path: 'email', model: 'Profile'}
     ]);
     res.status(200).send(getProducts);
   }catch(error) {
-    res.status(400).send(error.message);
+    res.status(400).json({status: -1, mssg: error.message});
+}
+});
+
+// OBTENER TODOS los productos
+router.get('/all/products', async (req, res) => {
+  try{
+    const getAllProducts = await Product.find().populate([
+      {path: 'email', model: 'Profile'}
+    ]);
+    res.status(200).send(getAllProducts);
+  }catch(error) {
+    res.status(400).json({status: -1, mssg: error.message});
+}
+});
+
+// Obtener los productos que publico el usuario de la sesion
+router.post('/myproducts', async (req, res) => {
+  try{
+    const getMyProducts = await Product.find({
+      'email': req.body.email
+    }).populate([/* Populate opcional */
+      {path: 'email', model: 'Profile'}
+    ]);
+    res.status(200).send(getMyProducts);
+  }catch(error) {
+    res.status(400).json({status: -1, mssg: error.message});
+}
+});
+
+// Obtener los productos que gano o tiene el usuario
+router.post('/myearnedproducts', async (req, res) => {
+  try{
+    const getEarnedProducts = await Product.find({
+      'profileWin': req.body.profileWin
+    }).populate([
+      {path: 'email', model: 'Profile'}
+    ]);
+    res.status(200).send(getEarnedProducts);
+  }catch(error) {
+    res.status(400).json({status: -1, mssg: error.message});
 }
 });
 
@@ -45,9 +87,9 @@ router.post('/', fields, async (req, res, next) => {
     const product = {
       nameProduct:req.body.nameProduct, category:req.body.category,
       description:{ material:req.body.material, marca:req.body.marca, dimensions:req.body.dimensions, actualCondition:req.body.actualCondition, observations:req.body.observations },
-      status: 'inactive',
       price:{ initialP:req.body.initialP, buyNow:req.body.buyNow, offered:req.body.offered },
       auctionDate:{ initialD:req.body.initialD, final:req.body.final },
+      status: 'inactive',
       file:{
         fileName: req.files['file'][0].originalname,
         filePath: req.files['file'][0].path,
@@ -73,7 +115,7 @@ router.post('/', fields, async (req, res, next) => {
     await addProducts.save();
     res.status(201).send('Products Successfully Added!');
   }catch(error) {
-    res.status(400).send(error.message);
+    res.status(400).json({status: -1, mssg: error.message});
   }
 });
 
@@ -82,12 +124,12 @@ router.put('/offered/:id', async (req, res, next) => {
   try{
     const updateOfferedProduct = {
       price:{
-        offered:req.body.price.offered
+        offered:req.body.offered
       }
     };
     
-    await Product.findByIdAndUpdate(req.params.id, updateOfferedProduct);
-    res.status(201).send('Successfully Offered Upgraded Products!');
+    let update = await Product.updateOne({_id : req.params.id} ,{ $set : updateOfferedProduct});
+    res.status(201).json({ status: 1, mssg: 'Successfully Offered Upgraded Products!', update: update } );
   }catch(error) {
     res.status(400).send('No se actualizo la oferta correctamente.');
   }
@@ -100,7 +142,7 @@ router.put('/status/:id', async (req, res, next) => {
       status:req.body.status
     };
     let update = await Product.updateOne({_id : req.params.id} ,{ $set : updateStatusProduct});
-    res.status(200).json({ status: 1, mssg: 'Successfully status Upgraded Products!', update: update } );
+    res.status(200).json({ status: 1, mssg: 'Successfully Status Upgraded Products!', update: update } );
   }catch(error) {
     console.log(error);
     res.status(401).json({status: -1, mssg: error.message});
@@ -119,15 +161,16 @@ router.put('/:id', fields, async (req, res, next) => {
       nameProduct:req.body.nameProduct, category:req.body.category,
       description:{ material:req.body.material, marca:req.body.marca, dimensions:req.body.dimensions, actualCondition:req.body.actualCondition, observations:req.body.observations },
       price:{ initialP:req.body.initialP, buyNow:req.body.buyNow, offered:req.body.offered },
-      auctionDate:{ initialD:req.body.initialD, final:req.body.final },
-      file:{
+      auctionDate:{ initialD:req.body.initialD, final:req.body.final }
+    };
+    if (req.files['file'][0]) {
+      updateProduct.file = {
         fileName: req.files['file'][0].originalname,
         filePath: req.files['file'][0].path,
         fileType: req.files['file'][0].mimetype,
         fileSize: fileSizeFormatter(req.files['file'][0].size, 2) // 0.00
-      },
-      email: req.body.email
-    };
+      }
+    }
     if(req.files['files']) {
       req.files['files'].forEach(element => {
         const image = {
@@ -144,7 +187,7 @@ router.put('/:id', fields, async (req, res, next) => {
     await Product.findByIdAndUpdate(req.params.id, updateProduct);
     res.status(201).send('Successfully Upgraded Products!');
   }catch(error) {
-    res.status(400).send(error.message);
+    res.status(400).json({status: -1, mssg: error.message});
   }
   /* if (Product.findByIdAndUpdate(req.params.id, newProduct) == true)
     res.json({status: 1, mssg: 'Product Updated'});
@@ -162,7 +205,7 @@ router.delete('/:id', async (req, res) => {
     else (Product.findByIdAndRemove(req.params.id) == false)
       res.json({status: -1, mssg: 'Product Not Deleted'}); */
   } catch (error) {
-    res.status(400).send(error.message);
+    res.status(400).json({status: -1, mssg: error.message});
   }
 });
 
