@@ -24,4 +24,4 @@ const Review = new Schema({
 
 module.exports = mongoose.model('Review', Review);
 
-/* FIN 1.5 */
+/* FIN 1.6 */
