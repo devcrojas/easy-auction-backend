@@ -17,6 +17,7 @@ router.get('/:id', async (req, res) => {
     ]);
     res.status(200).send(getReview);
   } catch (error) {
+    console.log(error.message);
     res.status(400).json({status: -1, mssg: error.message});
   }
 });
@@ -31,6 +32,7 @@ router.get('/', async (req, res) => {
     ]);
     res.status(200).send(getReviews);
   } catch (error) {
+    console.log(error.message);
     res.status(400).json({status: -1, mssg: error.message});
   }
 });
@@ -47,6 +49,7 @@ router.post('/myreviews', async (req, res) => {
     ]);
     res.status(200).send(getMyReviews);
   } catch (error) {
+    console.log(error.message);
     res.status(400).send(error.message);
   }
 });
@@ -70,9 +73,12 @@ router.post('/', async (req, res) => {
     };
   
     const addReviews = new Review(review);
-    await addReviews.save();
+    await addReviews.save(function (err) {
+      if(err) return console.log(err);
+    });
     res.status(201).send('Successfully Upgraded Review!');
   } catch (error) {
+    console.log(error.message);
     res.status(400).json({status: -1, mssg: error.message});
   }
 });
@@ -95,6 +101,7 @@ router.put('/:id', async (req, res) => {
     else (Product.findByIdAndUpdate(req.params.id, newProduct) == false)
       res.json({status: -1, mssg: 'Product Not Updated'}); */
   } catch (error) {
+    console.log(error.message);
     res.status(400).json({status: -1, mssg: error.message});
   }
 });
@@ -109,6 +116,7 @@ router.delete('/:id', async (req, res) => {
     else (Product.findByIdAndRemove(req.params.id) == false)
       res.json({status: -1, mssg: 'Product Not Deleted'}); */
   } catch (error) {
+    console.log(error.message);
     res.status(400).json({status: -1, mssg: error.message});
   }
 });
