@@ -106,6 +106,20 @@ router.put('/:id', async (req, res) => {
   }
 });
 
+// Actualizar campo status de alguna reseña
+router.put('/status/:id', async (req, res, next) => {
+  try{
+    const updateStatusReview = {
+      status:req.body.status
+    };
+    let update = await Review.updateOne({_id : req.params.id} ,{ $set : updateStatusReview});
+    res.status(200).json({ status: 1, mssg: 'Successfully Status Upgraded Reviews!', update: update } );
+  }catch(error) {
+    console.log(error.message);
+    res.status(401).json({status: -1, mssg: error.message});
+  }
+});
+
 // ELIMINAR reseña
 router.delete('/:id', async (req, res) => {
   try {
@@ -132,4 +146,4 @@ const fileSizeFormatter = (bytes, decimal) => {
 }
 
 module.exports = router;
-/* FIN 1.3 */
+/* FIN 1.2 */
