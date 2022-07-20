@@ -83,7 +83,7 @@ router.post('/', fields, async (req, res, next) => {
         fileType: req.files['file'][0].mimetype,
         fileSize: fileSizeFormatter(req.files['file'][0].size, 2) // 0.00
       },
-      profile: req.body.profile
+      email: req.body.email
     };
     if(req.files['files']) {
       req.files['files'].forEach(element => {
