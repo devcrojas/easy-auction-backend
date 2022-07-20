@@ -18,6 +18,7 @@ const Review = new Schema({
     productId: {
         type: Schema.Types.ObjectId
     },
+    status: String,
     datePublished: { type: String, default: d.toLocaleDateString() }
 },
 { versionKey: false });
