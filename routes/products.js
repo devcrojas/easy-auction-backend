@@ -1,4 +1,5 @@
 const express = require('express');
+const jwt = require('jsonwebtoken');
 const router = express.Router();
 
 // Models
@@ -9,6 +10,26 @@ const multer = require('../middleware/multerProducts')
 
 // Fields
 const fields = multer.upload.fields([{ name: 'file', maxCount: 1 }, { name: 'files', maxCount: 6 }])
+
+// Validacion de sesion
+validateSession = () => {
+  return (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    if (authHeader) {
+      const token = authHeader.split(' ')[1];
+      jwt.verify(token, process.env.TOKEN_SECRET, (err, user) => {
+        if (err) {
+          return res.sendStatus(403);
+        }
+        //console.log(user);
+        req.user = user;
+        next();
+      });
+    } else {
+      res.sendStatus(401);
+    }
+  };
+}
 
 
 // OBTENER UN SOLO producto
@@ -53,7 +74,7 @@ router.get('/all/products', async (req, res) => {
 });
 
 // Obtener los productos que publico el usuario de la sesion
-router.post('/myproducts', async (req, res) => {
+router.post('/myproducts', validateSession(), async (req, res) => {
   try{
     const getMyProducts = await Product.find({
       'email': req.body.email
@@ -83,7 +104,7 @@ router.post('/myearnedproducts', async (req, res) => {
 });
 
 // AGREGAR un nuevo producto
-router.post('/', fields, async (req, res, next) => {
+router.post('/', validateSession(), fields, async (req, res, next) => {
   try{
     //Se relaciona el email con la bd de profile y encuentra la coincidencia
     //let sellerObject = await Profile.aggregate([{ $match: { email: req.body.email } }]);
@@ -160,7 +181,7 @@ router.put('/status/:id', async (req, res, next) => {
 
 
 // ACTUALIZAR a nuevo producto
-router.put('/:id', fields, async (req, res, next) => {
+router.put('/:id', validateSession(), fields, async (req, res, next) => {
   try{
     //Se relaciona el email con la bd de profile y encuentra la coincidencia
     //let sellerObject = await Profile.aggregate([{ $match: { email: req.body.email } }]);
