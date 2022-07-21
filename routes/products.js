@@ -19,6 +19,7 @@ router.get('/:id', async (req, res) => {
     ]);
     res.status(200).send(getProduct);
   } catch (error) {
+    console.log(error.message);
     res.status(400).json({status: -1, mssg: error.message});
   }
 });
@@ -33,6 +34,7 @@ router.get('/', async (req, res) => {
     ]);
     res.status(200).send(getProducts);
   }catch(error) {
+    console.log(error.message);
     res.status(400).json({status: -1, mssg: error.message});
 }
 });
@@ -45,6 +47,7 @@ router.get('/all/products', async (req, res) => {
     ]);
     res.status(200).send(getAllProducts);
   }catch(error) {
+    console.log(error.message);
     res.status(400).json({status: -1, mssg: error.message});
 }
 });
@@ -59,6 +62,7 @@ router.post('/myproducts', async (req, res) => {
     ]);
     res.status(200).send(getMyProducts);
   }catch(error) {
+    console.log(error.message);
     res.status(400).json({status: -1, mssg: error.message});
 }
 });
@@ -73,6 +77,7 @@ router.post('/myearnedproducts', async (req, res) => {
     ]);
     res.status(200).send(getEarnedProducts);
   }catch(error) {
+    console.log(error.message);
     res.status(400).json({status: -1, mssg: error.message});
 }
 });
@@ -112,9 +117,12 @@ router.post('/', fields, async (req, res, next) => {
     }
 
     const addProducts = new Product(product);
-    await addProducts.save();
+    await addProducts.save(function (err) {
+      if(err) return console.log(err);
+    });
     res.status(201).send('Products Successfully Added!');
   }catch(error) {
+    console.log(error.message);
     res.status(400).json({status: -1, mssg: error.message});
   }
 });
@@ -131,6 +139,7 @@ router.put('/offered/:id', async (req, res, next) => {
     let update = await Product.updateOne({_id : req.params.id} ,{ $set : updateOfferedProduct});
     res.status(201).json({ status: 1, mssg: 'Successfully Offered Upgraded Products!', update: update } );
   }catch(error) {
+    console.log(error.message);
     res.status(400).send('No se actualizo la oferta correctamente.');
   }
 });
@@ -144,7 +153,7 @@ router.put('/status/:id', async (req, res, next) => {
     let update = await Product.updateOne({_id : req.params.id} ,{ $set : updateStatusProduct});
     res.status(200).json({ status: 1, mssg: 'Successfully Status Upgraded Products!', update: update } );
   }catch(error) {
-    console.log(error);
+    console.log(error.message);
     res.status(401).json({status: -1, mssg: error.message});
   }
 });
@@ -163,7 +172,7 @@ router.put('/:id', fields, async (req, res, next) => {
       price:{ initialP:req.body.initialP, buyNow:req.body.buyNow, offered:req.body.offered },
       auctionDate:{ initialD:req.body.initialD, final:req.body.final }
     };
-    if (req.files['file'][0]) {
+    if (req.files['file'] && req.files['file'][0]) {
       updateProduct.file = {
         fileName: req.files['file'][0].originalname,
         filePath: req.files['file'][0].path,
@@ -187,6 +196,7 @@ router.put('/:id', fields, async (req, res, next) => {
     await Product.findByIdAndUpdate(req.params.id, updateProduct);
     res.status(201).send('Successfully Upgraded Products!');
   }catch(error) {
+    console.log(error.message);
     res.status(400).json({status: -1, mssg: error.message});
   }
   /* if (Product.findByIdAndUpdate(req.params.id, newProduct) == true)
@@ -205,6 +215,7 @@ router.delete('/:id', async (req, res) => {
     else (Product.findByIdAndRemove(req.params.id) == false)
       res.json({status: -1, mssg: 'Product Not Deleted'}); */
   } catch (error) {
+    console.log(error.message);
     res.status(400).json({status: -1, mssg: error.message});
   }
 });

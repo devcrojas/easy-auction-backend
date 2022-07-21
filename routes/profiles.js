@@ -16,6 +16,7 @@ router.get('/:id', async (req, res) => {
     res.send(getProfile);
     res.status(200);
   } catch (error) {
+    console.log(error.message);
     res.status(400).json({status: -1, mssg: 'Perfil aun no creado'});
   }
 });
@@ -27,6 +28,7 @@ router.get('/', async (req, res) => {
 
     res.status(200).send(getProfiles);
   } catch (error) {
+    console.log(error.message);
     res.status(400).json({status: -1, mssg: error.message});
   }
 });
@@ -77,9 +79,12 @@ router.post('/', multer.upload.single('file'), async (req, res, next) => {
       } 
     } */
     const addProfile = new Profile(profile);
-    await addProfile.save();
+    await addProfile.save(function (err) {
+      if(err) return console.log(err);
+    });
     res.status(201).send('Profile Successfully Added!');
   } catch (error) {
+    console.log(error.message);
     res.status(400).json({status: -1, mssg: error.message});
   }
 });
@@ -142,6 +147,7 @@ router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
     await Profile.findByIdAndUpdate(req.params.id, updateProfile);
     res.status(200).json({ status: 1, mssg: 'Successfully Upgraded Profile!', update: update });
   } catch (error) {
+    console.log(error.message);
     res.status(400).json({status: -1, mssg:error.message});
   }
 });
@@ -168,6 +174,7 @@ router.put('/image/:id', multer.upload.single('file'), async (req, res, next) =>
         res.json({ token })
       });
     } catch (error) {
+      console.log(error.message);
       res.status(400).json({status: -1, mssg: error.message});
     }
   } else {
@@ -185,6 +192,7 @@ router.delete('/:id', async (req, res) => {
     else (Product.findByIdAndRemove(req.params.id) == false)
       res.json({status: -1, mssg: 'Product Not Deleted'}); */
   } catch (error) {
+    console.log(error.message);
     res.status(400).json({status: -1, mssg: error.message});
   }
 });
