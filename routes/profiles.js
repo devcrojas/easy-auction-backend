@@ -160,7 +160,7 @@ router.put('/image/:id', multer.upload.single('file'), async (req, res, next) =>
     try {
       const getProfileFile = await Profile.findById(req.params.id);
       //console.log(getProfileFile.file);
-      const deletedImg = getProfileFile.file.filePath;
+      const deletedPhoto = getProfileFile.file.filePath;
       //console.log(req.body.profile);
       //console.log(user.profile);
       const updateFileProfile = {};
@@ -172,7 +172,7 @@ router.put('/image/:id', multer.upload.single('file'), async (req, res, next) =>
       }
       await Profile.findByIdAndUpdate(req.params.id, updateFileProfile);
       try {
-        fs.unlinkSync(deletedImg);
+        fs.unlinkSync(deletedPhoto);
       } catch (error) {
         console.log(error.message);
       }

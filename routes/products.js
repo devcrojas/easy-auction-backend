@@ -1,5 +1,6 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
+const fs = require('fs');
 const router = express.Router();
 
 // Models
@@ -193,6 +194,10 @@ router.put('/auctionauth/:id', async (req, res, next) => {
 // ACTUALIZAR a nuevo producto
 router.put('/:id', fields, async (req, res, next) => {
   try{
+    const getProductData = await Product.findById(req.params.id);
+    const deletedImg = getProductData.file.filePath;
+    //const deletedImgs = getProductData.files[1].filePath;
+    //console.log(deletedImg);
     //Se relaciona el email con la bd de profile y encuentra la coincidencia
     //let sellerObject = await Profile.aggregate([{ $match: { email: req.body.email } }]);
     let filesArray = [];
@@ -225,6 +230,11 @@ router.put('/:id', fields, async (req, res, next) => {
     }
     
     await Product.findByIdAndUpdate(req.params.id, updateProduct);
+    try {
+      fs.unlinkSync(deletedImg);
+    } catch (error) {
+      console.log(error.message);
+    }
     res.status(201).send('Successfully Upgraded Product!');
   }catch(error) {
     console.log(error.message);
