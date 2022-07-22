@@ -18,9 +18,12 @@ const Product = new Schema({
         offered: { type: Number, required: false }
     }},
     auctionDate: { type: {
-        initialD: { type: Date, required: false }, /* True: Fehca de inicio al autorizar subasta */
+        request: { type: Date, required: false }, /* Fecha en que se solicito la subasta */
+        initialD: { type: Date, required: false }, /* True: Fehca de inicio programda */
+        acceptance: { type: Date, required: false }, /* Fecha de autorizacion */
         final: { type: Date, required: false }
     }},
+    adminAuth: String,
     file: {
         fileName: {
             type: String,

@@ -1,5 +1,6 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
+const fs = require('fs');
 
 const router = express.Router();
 
@@ -145,7 +146,7 @@ router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
     };
 
     await Profile.findByIdAndUpdate(req.params.id, updateProfile);
-    res.status(200).json({ status: 1, mssg: 'Successfully Upgraded Profile!', update: update });
+    res.status(200).json({ status: 1, mssg: 'Successfully Upgraded Profile!' });
   } catch (error) {
     console.log(error.message);
     res.status(400).json({status: -1, mssg:error.message});
@@ -157,6 +158,9 @@ router.put('/image/:id', multer.upload.single('file'), async (req, res, next) =>
   //console.log(req.file);
   if (req.file && req.file.originalname) {
     try {
+      const getProfileFile = await Profile.findById(req.params.id);
+      //console.log(getProfileFile.file);
+      const deletedImg = getProfileFile.file.filePath;
       //console.log(req.body.profile);
       //console.log(user.profile);
       const updateFileProfile = {};
@@ -167,6 +171,11 @@ router.put('/image/:id', multer.upload.single('file'), async (req, res, next) =>
         fileSize: fileSizeFormatter(req.file.size, 2) // 0.00
       }
       await Profile.findByIdAndUpdate(req.params.id, updateFileProfile);
+      try {
+        fs.unlinkSync(deletedImg);
+      } catch (error) {
+        console.log(error.message);
+      }
       res.status(201).send('Successfully Upgraded Image Profile!');
 
       const getProfile = await Profile.findById(req.params.id);
@@ -178,7 +187,7 @@ router.put('/image/:id', multer.upload.single('file'), async (req, res, next) =>
       res.status(400).json({status: -1, mssg: error.message});
     }
   } else {
-    res.json({ status: -1, mssg: "No se detecto ninguna imagen" });
+    res.status(400).json({ status: -1, mssg: "No se detecto ninguna imagen" });
   }
 });
 

@@ -114,7 +114,7 @@ router.post('/', validateSession(), fields, async (req, res, next) => {
       nameProduct:req.body.nameProduct, category:req.body.category,
       description:{ material:req.body.material, marca:req.body.marca, dimensions:req.body.dimensions, actualCondition:req.body.actualCondition, observations:req.body.observations },
       price:{ initialP:req.body.initialP, buyNow:req.body.buyNow, offered:req.body.offered },
-      auctionDate:{ initialD:req.body.initialD, final:req.body.final },
+      auctionDate:{ request:req.body.request, final:req.body.final, initialD:'', acceptance:'' },
       status: 'inactive',
       file:{
         fileName: req.files['file'][0].originalname,
@@ -122,7 +122,9 @@ router.post('/', validateSession(), fields, async (req, res, next) => {
         fileType: req.files['file'][0].mimetype,
         fileSize: fileSizeFormatter(req.files['file'][0].size, 2) // 0.00
       },
-      email: req.body.email
+      email: req.body.email,
+      profileWin: '',
+      adminAuth: ''
     };
     if(req.files['files']) {
       req.files['files'].forEach(element => {
@@ -141,7 +143,7 @@ router.post('/', validateSession(), fields, async (req, res, next) => {
     await addProducts.save(function (err) {
       if(err) return console.log(err);
     });
-    res.status(201).send('Products Successfully Added!');
+    res.status(201).send('Product Successfully Added!');
   }catch(error) {
     console.log(error.message);
     res.status(400).json({status: -1, mssg: error.message});
@@ -158,21 +160,29 @@ router.put('/offered/:id', async (req, res, next) => {
     };
     
     let update = await Product.updateOne({_id : req.params.id} ,{ $set : updateOfferedProduct});
-    res.status(201).json({ status: 1, mssg: 'Successfully Offered Upgraded Products!', update: update } );
+    res.status(201).json({ status: 1, mssg: 'Successfully Offered Upgraded Product!', update: update } );
   }catch(error) {
     console.log(error.message);
-    res.status(400).send('No se actualizo la oferta correctamente.');
+    res.status(400).json({status: -1, mssg: error.message});
   }
 });
 
-// Actualizar campo status de algun producto
-router.put('/status/:id', async (req, res, next) => {
+// Autorizar subasta
+router.put('/auctionauth/:id', async (req, res, next) => {
   try{
-    const updateStatusProduct = {
-      status:req.body.status
+    const productAuth = await Product.findById(req.params.id);
+    const updateAuthProduct = {
+      status:req.body.status,
+      auctionDate:{ request:productAuth.auctionDate.request, final:productAuth.auctionDate.final, acceptance:req.body.auctionDate.acceptance, initialD:'' },
+      adminAuth:req.body.adminAuth
     };
-    let update = await Product.updateOne({_id : req.params.id} ,{ $set : updateStatusProduct});
-    res.status(200).json({ status: 1, mssg: 'Successfully Status Upgraded Products!', update: update } );
+    let updateAuth = await Product.updateOne({_id : req.params.id} ,{ $set : updateAuthProduct});
+    console.log({
+      "admin": req.body.adminAuth,
+      "dateAccept": req.body.auctionDate.acceptance,
+      "dateInit": productAuth.auctionDate.initialD
+    });
+    res.status(200).json({ status: 1, mssg: 'Authorized Product!', update: updateAuth } );
   }catch(error) {
     console.log(error.message);
     res.status(401).json({status: -1, mssg: error.message});
@@ -191,7 +201,7 @@ router.put('/:id', validateSession(), fields, async (req, res, next) => {
       nameProduct:req.body.nameProduct, category:req.body.category,
       description:{ material:req.body.material, marca:req.body.marca, dimensions:req.body.dimensions, actualCondition:req.body.actualCondition, observations:req.body.observations },
       price:{ initialP:req.body.initialP, buyNow:req.body.buyNow, offered:req.body.offered },
-      auctionDate:{ initialD:req.body.initialD, final:req.body.final }
+      auctionDate:{ request:req.body.request, final:req.body.final }
     };
     if (req.files['file'] && req.files['file'][0]) {
       updateProduct.file = {
@@ -215,7 +225,7 @@ router.put('/:id', validateSession(), fields, async (req, res, next) => {
     }
     
     await Product.findByIdAndUpdate(req.params.id, updateProduct);
-    res.status(201).send('Successfully Upgraded Products!');
+    res.status(201).send('Successfully Upgraded Product!');
   }catch(error) {
     console.log(error.message);
     res.status(400).json({status: -1, mssg: error.message});
