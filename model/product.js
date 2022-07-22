@@ -19,7 +19,7 @@ const Product = new Schema({
     }},
     auctionDate: { type: {
         request: { type: Date, required: false }, /* Fecha en que se solicito la subasta */
-        initialD: { type: Date, required: false }, /* True: Fehca de inicio programda */
+        initialD: { type: Date, required: false }, /* True: Fehca de inicio programada */
         acceptance: { type: Date, required: false }, /* Fecha de autorizacion */
         final: { type: Date, required: false }
     }},
