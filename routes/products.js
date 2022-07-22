@@ -201,7 +201,7 @@ router.put('/:id', validateSession(), fields, async (req, res, next) => {
       nameProduct:req.body.nameProduct, category:req.body.category,
       description:{ material:req.body.material, marca:req.body.marca, dimensions:req.body.dimensions, actualCondition:req.body.actualCondition, observations:req.body.observations },
       price:{ initialP:req.body.initialP, buyNow:req.body.buyNow, offered:req.body.offered },
-      auctionDate:{ request:req.body.request, final:req.body.final }
+      auctionDate:{ request:req.body.request, final:req.body.final, initialD:'', acceptance:'' },
     };
     if (req.files['file'] && req.files['file'][0]) {
       updateProduct.file = {
