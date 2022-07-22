@@ -74,7 +74,7 @@ router.get('/all/products', async (req, res) => {
 });
 
 // Obtener los productos que publico el usuario de la sesion
-router.post('/myproducts', validateSession(), async (req, res) => {
+router.post('/myproducts', async (req, res) => {
   try{
     const getMyProducts = await Product.find({
       'email': req.body.email
@@ -104,7 +104,7 @@ router.post('/myearnedproducts', async (req, res) => {
 });
 
 // AGREGAR un nuevo producto
-router.post('/', validateSession(), fields, async (req, res, next) => {
+router.post('/', fields, async (req, res, next) => {
   try{
     //Se relaciona el email con la bd de profile y encuentra la coincidencia
     //let sellerObject = await Profile.aggregate([{ $match: { email: req.body.email } }]);
@@ -191,7 +191,7 @@ router.put('/auctionauth/:id', async (req, res, next) => {
 
 
 // ACTUALIZAR a nuevo producto
-router.put('/:id', validateSession(), fields, async (req, res, next) => {
+router.put('/:id', fields, async (req, res, next) => {
   try{
     //Se relaciona el email con la bd de profile y encuentra la coincidencia
     //let sellerObject = await Profile.aggregate([{ $match: { email: req.body.email } }]);
@@ -264,4 +264,4 @@ const fileSizeFormatter = (bytes, decimal) => {
 
 module.exports = router;
 
-/* FIN 1.4 */
+/* FIN 1.50 */
