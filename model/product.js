@@ -18,10 +18,9 @@ const Product = new Schema({
         offered: { type: Number, required: false }
     }},
     auctionDate: { type: {
-        request: { type: Date, required: false }, /* Fecha en que se solicito la subasta */
-        initialD: { type: Date, required: false }, /* True: Fehca de inicio programada */
-        acceptance: { type: Date, required: false }, /* Fecha de autorizacion */
-        final: { type: Date, required: false }
+        create: { type: Date, required: false }, /* Fecha de creacion de la subasta y en que se solicito la subasta */
+        initialD: { type: Date, required: false }, /* True: Fecha en que se inicia subasta (programada) */
+        final: { type: Date, required: false } /* Fecha cierre de la subasta */
     }},
     adminAuth: String,
     file: {
@@ -46,6 +45,7 @@ const Product = new Schema({
     email: {
         type: String
     },
+    logAuthProd: {type: Object, required: false},
     profileWin: String
 },
 { versionKey: false });

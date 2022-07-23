@@ -115,7 +115,8 @@ router.post('/', fields, async (req, res, next) => {
       nameProduct:req.body.nameProduct, category:req.body.category,
       description:{ material:req.body.material, marca:req.body.marca, dimensions:req.body.dimensions, actualCondition:req.body.actualCondition, observations:req.body.observations },
       price:{ initialP:req.body.initialP, buyNow:req.body.buyNow, offered:req.body.offered },
-      auctionDate:{ request:req.body.request, final:req.body.final, initialD:'', acceptance:'' },
+      auctionDate:{ create:req.body.create, final:req.body.final, initialD:'' },
+      adminAuth: '',
       status: 'inactive',
       file:{
         fileName: req.files['file'][0].originalname,
@@ -124,8 +125,7 @@ router.post('/', fields, async (req, res, next) => {
         fileSize: fileSizeFormatter(req.files['file'][0].size, 2) // 0.00
       },
       email: req.body.email,
-      profileWin: '',
-      adminAuth: ''
+      profileWin: ''
     };
     if(req.files['files']) {
       req.files['files'].forEach(element => {
@@ -171,18 +171,25 @@ router.put('/offered/:id', async (req, res, next) => {
 // Autorizar subasta
 router.put('/auctionauth/:id', async (req, res, next) => {
   try{
-    const productAuth = await Product.findById(req.params.id);
+    let dateAuthprod = '';
     const updateAuthProduct = {
       status:req.body.status,
-      auctionDate:{ request:productAuth.auctionDate.request, final:productAuth.auctionDate.final, acceptance:req.body.auctionDate.acceptance, initialD:'' },
       adminAuth:req.body.adminAuth
     };
+    dateAuthprod = req.body.authprod;
     let updateAuth = await Product.updateOne({_id : req.params.id} ,{ $set : updateAuthProduct});
-    console.log({
+    let logProdAuth = await Product.updateOne({_id: req.params.id},{$set : {logAuthProd: {
+      status:req.body.status,
+      admin: req.body.adminAuth,
+      dateStatus: dateAuthprod,
+      dateInit: dateAuthprod
+    }} });
+    console.log(logProdAuth);
+    /* console.log({
       "admin": req.body.adminAuth,
       "dateAccept": req.body.auctionDate.acceptance,
       "dateInit": productAuth.auctionDate.initialD
-    });
+    }); */
     res.status(200).json({ status: 1, mssg: 'Authorized Product!', update: updateAuth } );
   }catch(error) {
     console.log(error.message);
@@ -206,7 +213,7 @@ router.put('/:id', fields, async (req, res, next) => {
       nameProduct:req.body.nameProduct, category:req.body.category,
       description:{ material:req.body.material, marca:req.body.marca, dimensions:req.body.dimensions, actualCondition:req.body.actualCondition, observations:req.body.observations },
       price:{ initialP:req.body.initialP, buyNow:req.body.buyNow, offered:req.body.offered },
-      auctionDate:{ request:req.body.request, final:req.body.final, initialD:'', acceptance:'' },
+      auctionDate:{ create:req.body.create, final:req.body.final, initialD:'' },
     };
     if (req.files['file'] && req.files['file'][0]) {
       updateProduct.file = {
@@ -274,4 +281,4 @@ const fileSizeFormatter = (bytes, decimal) => {
 
 module.exports = router;
 
-/* FIN 1.50 */
+/* FIN 1.52 */
