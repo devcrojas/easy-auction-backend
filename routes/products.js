@@ -10,7 +10,7 @@ const Profile = require('../model/profile');
 const multer = require('../middleware/multerProducts')
 
 // Fields
-const fields = multer.upload.fields([{ name: 'file', maxCount: 1 }, { name: 'files', maxCount: 6 }])
+const fields = multer.upload.fields([{ name: 'file', maxCount: 1 }, { name: 'files', maxCount: 5 }])
 
 // Validacion de sesion
 validateSession = () => {
@@ -75,7 +75,7 @@ router.get('/all/products', async (req, res) => {
 });
 
 // Obtener los productos que publico el usuario de la sesion
-router.post('/myproducts', async (req, res) => {
+router.post('/myproducts', validateSession(), async (req, res) => {
   try{
     const getMyProducts = await Product.find({
       'email': req.body.email
@@ -105,7 +105,7 @@ router.post('/myearnedproducts', async (req, res) => {
 });
 
 // AGREGAR un nuevo producto
-router.post('/', fields, async (req, res, next) => {
+router.post('/', validateSession(), fields, async (req, res, next) => {
   try{
     //Se relaciona el email con la bd de profile y encuentra la coincidencia
     //let sellerObject = await Profile.aggregate([{ $match: { email: req.body.email } }]);
@@ -199,12 +199,21 @@ router.put('/auctionauth/:id', async (req, res, next) => {
 
 
 // ACTUALIZAR a nuevo producto
-router.put('/:id', fields, async (req, res, next) => {
+router.put('/:id', validateSession(), fields, async (req, res, next) => {
   try{
     const getProductData = await Product.findById(req.params.id);
-    const deletedImg = getProductData.file.filePath;
-    //const deletedImgs = getProductData.files[1].filePath;
-    //console.log(deletedImg);
+    const imgPath = getProductData.file.filePath;
+    const imgs = getProductData.files;
+    //console.log(imgPath);
+    //console.log(imgs[0].filePath); /* Debuggear con TryCatch */
+    /*
+    if(imgs[3]){
+      console.log("Si se puede leer.");
+    } else{
+      console.log("No se puede leer.");
+    }
+    */
+
     //Se relaciona el email con la bd de profile y encuentra la coincidencia
     //let sellerObject = await Profile.aggregate([{ $match: { email: req.body.email } }]);
     let filesArray = [];
@@ -216,41 +225,75 @@ router.put('/:id', fields, async (req, res, next) => {
       auctionDate:{ create:req.body.create, final:req.body.final, initialD:'' },
     };
     if (req.files['file'] && req.files['file'][0]) {
+      const reqImg = req.files['file'][0];
       updateProduct.file = {
-        fileName: req.files['file'][0].originalname,
-        filePath: req.files['file'][0].path,
-        fileType: req.files['file'][0].mimetype,
-        fileSize: fileSizeFormatter(req.files['file'][0].size, 2) // 0.00
+        fileName: reqImg.originalname,
+        filePath: reqImg.path,
+        fileType: reqImg.mimetype,
+        fileSize: fileSizeFormatter(reqImg.size, 2) // 0.00
+      };
+      try {
+        fs.unlinkSync(imgPath);
+      } catch (error) {
+        console.log(error.message);
       }
     }
     if(req.files['files']) {
-      req.files['files'].forEach(element => {
+      //console.log(req.files['files']);
+      const reqImgs = req.files['files'];
+      let i = 0;
+      reqImgs.forEach(element => {
         const image = {
           fileName: element.originalname,
           filePath: element.path,
           fileType: element.mimetype,
           fileSize: fileSizeFormatter(element.size, 2)
         }
-        filesArray.push(image);
+        if(image !== imgs[i]){
+          //console.log("Si no es la misma imagen " + i + " anterior.");
+          filesArray.push(image);
+          try {
+            fs.unlinkSync(imgs[i].filePath);
+          } catch (error) {
+            console.log(error.message);
+          }
+          i++;
+          //console.log("Se cambio exitosamente la imagen " + i + ".");
+          //console.log(image);
+        } else {
+          //console.log("Si si es la misma imagen " + i + " anterior.");
+          filesArray.push(imgs[i]);
+        }
       });
+      // Para borrar las imagenes que faltaron
+      let numFiles = reqImgs.length;
+      //console.log(reqImgs.length);
+      for (let n = numFiles; n < 5; n++) {
+        //console.log("Posicion del array: " + n);
+        if(imgs[n]){
+          //console.log("Se borrara la imagen en la posicion " + n + " del array.") /* Imagen (n+1) del files */
+          try {
+            fs.unlinkSync(imgs[n].filePath);
+            //console.log("Se borro exitosamente la imagen " + (n+1) + " (del producto antes de esta actualizacion).");
+          } catch (error) {
+            console.log(error.message);
+          }
+        }
+      }
+      
       updateProduct.files = filesArray;
+      //console.log(filesArray);
     }
     
     await Product.findByIdAndUpdate(req.params.id, updateProduct);
-    try {
-      fs.unlinkSync(deletedImg);
-    } catch (error) {
-      console.log(error.message);
-    }
+    /* if(Product.findByIdAndUpdate(req.params.id, updateProduct)){
+      console.log("Se puede actualizar correctamente.");
+    } */
     res.status(201).send('Successfully Upgraded Product!');
   }catch(error) {
     console.log(error.message);
     res.status(400).json({status: -1, mssg: error.message});
   }
-  /* if (Product.findByIdAndUpdate(req.params.id, newProduct) == true)
-    res.json({status: 1, mssg: 'Product Updated'});
-  else (Product.findByIdAndUpdate(req.params.id, newProduct) == false)
-    res.json({status: -1, mssg: 'Product Not Updated'}); */
 });
 
 // ELIMINAR un producto
@@ -281,4 +324,4 @@ const fileSizeFormatter = (bytes, decimal) => {
 
 module.exports = router;
 
-/* FIN 1.54 */
+/* FIN 1.55 */
