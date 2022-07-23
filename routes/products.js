@@ -62,7 +62,7 @@ router.get('/', async (req, res) => {
 });
 
 // OBTENER TODOS los productos
-router.get('/all/products', async (req, res) => {
+router.get('/all/products', validateSession(), async (req, res) => {
   try{
     const getAllProducts = await Product.find().populate([
       {path: 'email', model: 'Profile'}
@@ -169,7 +169,7 @@ router.put('/offered/:id', async (req, res, next) => {
 });
 
 // Autorizar subasta
-router.put('/auctionauth/:id', async (req, res, next) => {
+router.put('/auctionauth/:id', validateSession(), async (req, res, next) => {
   try{
     let dateAuthProd = '';
     const updateAuthProduct = {
@@ -324,4 +324,4 @@ const fileSizeFormatter = (bytes, decimal) => {
 
 module.exports = router;
 
-/* FIN 1.55 */
+/* FIN 1.56 */
