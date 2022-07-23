@@ -171,18 +171,18 @@ router.put('/offered/:id', async (req, res, next) => {
 // Autorizar subasta
 router.put('/auctionauth/:id', async (req, res, next) => {
   try{
-    let dateAuthprod = '';
+    let dateAuthProd = '';
     const updateAuthProduct = {
       status:req.body.status,
       adminAuth:req.body.adminAuth
     };
-    dateAuthprod = req.body.dateAuthprod;
+    dateAuthProd = req.body.dateAuthProd;
     let updateAuth = await Product.updateOne({_id : req.params.id} ,{ $set : updateAuthProduct});
     let logProdAuth = await Product.updateOne({_id: req.params.id},{$set : {logAuthProd: {
       status:req.body.status,
       admin: req.body.adminAuth,
-      dateStatus: dateAuthprod,
-      dateInit: dateAuthprod
+      dateStatus: dateAuthProd,
+      dateInit: dateAuthProd
     }} });
     console.log(logProdAuth);
     /* console.log({
@@ -281,4 +281,4 @@ const fileSizeFormatter = (bytes, decimal) => {
 
 module.exports = router;
 
-/* FIN 1.53 */
+/* FIN 1.54 */
