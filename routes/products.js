@@ -176,7 +176,7 @@ router.put('/auctionauth/:id', async (req, res, next) => {
       status:req.body.status,
       adminAuth:req.body.adminAuth
     };
-    dateAuthprod = req.body.authprod;
+    dateAuthprod = req.body.dateAuthprod;
     let updateAuth = await Product.updateOne({_id : req.params.id} ,{ $set : updateAuthProduct});
     let logProdAuth = await Product.updateOne({_id: req.params.id},{$set : {logAuthProd: {
       status:req.body.status,
