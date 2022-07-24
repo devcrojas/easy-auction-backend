@@ -197,6 +197,20 @@ router.put('/auctionauth/:id', validateSession(), async (req, res, next) => {
   }
 });
 
+// Actualizar campo status de algun producto
+router.put('/status/:id', validateSession(), async (req, res, next) => {
+  try{
+    const updateStatusProduct = {
+      status:req.body.status
+    };
+    let update = await Product.updateOne({_id : req.params.id} ,{ $set : updateStatusProduct});
+    res.status(200).json({ status: 1, mssg: 'Successfully Status Upgraded Product!', update: update } );
+  }catch(error) {
+    console.log(error);
+    res.status(401).json({status: -1, mssg: error.message});
+  }
+});
+
 
 // ACTUALIZAR a nuevo producto
 router.put('/:id', validateSession(), fields, async (req, res, next) => {
@@ -297,14 +311,35 @@ router.put('/:id', validateSession(), fields, async (req, res, next) => {
 });
 
 // ELIMINAR un producto
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', validateSession(), async (req, res) => {
   try {
+    const getProdData = await Product.findById(req.params.id);
+    const imgPath = getProdData.file.filePath;
+    const imgs = getProdData.files;
+    
     await Product.findByIdAndRemove(req.params.id);
+    try {
+      fs.unlinkSync(imgPath);
+    } catch (error) {
+      console.log(error.message);
+    }
+    imgs.forEach(deleted => {
+      try {
+        fs.unlinkSync(deleted.filePath);
+      } catch (error) {
+        console.log(error.message);
+      }
+    });
+    /* //Manera 2
+    for (let n = 0; n < imgs.length; n++) {
+      //console.log("Posicion: " + n);
+      try {
+        fs.unlinkSync(imgs[n].filePath);
+      } catch (error) {
+        console.log(error.message);
+      }
+    } */
     res.status(200).send('Product Deleted');
-    /* if (Product.findByIdAndRemove(req.params.id) == true)
-      res.json({status: 1, mssg: 'Product Deleted'});
-    else (Product.findByIdAndRemove(req.params.id) == false)
-      res.json({status: -1, mssg: 'Product Not Deleted'}); */
   } catch (error) {
     console.log(error.message);
     res.status(400).json({status: -1, mssg: error.message});
@@ -324,4 +359,4 @@ const fileSizeFormatter = (bytes, decimal) => {
 
 module.exports = router;
 
-/* FIN 1.56 */
+/* FIN 1.57 */

@@ -7,7 +7,13 @@ let numFl = fl.length;
 
 const storageProducts = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/products');
+        try {
+            fs.mkdirSync('./uploads/products/' + req.user.id, { recursive: true });
+            cb(null, 'uploads/products/' + req.user.id);
+        } catch (error) {
+            console.log(error.message);
+            cb(null, 'uploads/products');
+        }
     },
     filename: (req, file, cb) => {
         let numI = ++numFl
