@@ -104,11 +104,7 @@ router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
     };
 
     await Profile.findByIdAndUpdate(req.params.id, updateProfile);
-<<<<<<< HEAD
-    res.status(200).json({ status: 1, mssg: 'Successfully Upgraded Profile!'});
-=======
     res.status(200).json({ status: 1, mssg: 'Successfully Upgraded Profile!' });
->>>>>>> 7f714339809423be904cfdafac3133cef3b7a90f
   } catch (error) {
     console.log(error);
     res.status(400).json({status: -1, mssg:error.message});
