@@ -11,9 +11,9 @@ const Product = require('../model/product');
 router.get('/:id', async (req, res) => {
   try {
     const getReview = await Review.findById(req.params.id).populate([
-      {path: 'emailU', model: 'Profile'},
-      {path: 'emailP', model: 'Profile'},
-      {path: 'productId', model: 'Product'}
+      {path: 'userLog', model: 'Profile'},
+      {path: 'profileProd', model: 'Profile'},
+      {path: 'product', model: 'Product'}
     ]);
     res.status(200).send(getReview);
   } catch (error) {
@@ -26,9 +26,9 @@ router.get('/:id', async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     const getReviews = await Review.find().populate([
-      {path: 'emailU', model: 'Profile'},
-      {path: 'emailP', model: 'Profile'},
-      {path: 'productId', model: 'Product'}
+      {path: 'userLog', model: 'Profile'},
+      {path: 'profileProd', model: 'Profile'},
+      {path: 'product', model: 'Product'}
     ]);
     res.status(200).send(getReviews);
   } catch (error) {
@@ -41,11 +41,11 @@ router.get('/', async (req, res) => {
 router.post('/myreviews', async (req, res) => {
   try {
     const getMyReviews = await Review.find({
-      'emailU': req.body.emailU
+      'userLog': req.body.userLog
     }).populate([
-      {path: 'emailU', model: 'Profile', select: '_id'},
-      {path: 'emailP', model: 'Profile', select: '_id firstName lastName file'},
-      {path: 'productId', model: 'Product', select: '_id nameProduct file'}
+      {path: 'userLog', model: 'Profile', select: '_id'},
+      {path: 'profileProd', model: 'Profile', select: '_id firstName lastName file'},
+      {path: 'product', model: 'Product', select: '_id nameProduct file'}
     ]);
     res.status(200).send(getMyReviews);
   } catch (error) {
@@ -58,8 +58,8 @@ router.post('/myreviews', async (req, res) => {
 router.post('/', async (req, res) => {
   //console.log(req.body);
   try {
-    //let userObject = await Profile.aggregate([{ $match: { _id: req.body.emailU } }]);
-    //let profileObject = await Profile.aggregate([{ $match: { email: req.body.profile }]);
+    //let userObject = await Profile.aggregate([{ $match: { _id: req.body.userLog } }]);
+    //let profileObject = await Profile.aggregate([{ $match: { email: req.body.profileProd }]);
     //let products = await Product.find();
     //let productObject = products.filter((prod) => {return prod._id == req.body.product});
     //console.log(productObject);
@@ -67,9 +67,9 @@ router.post('/', async (req, res) => {
       comment:req.body.comment,
       type:req.body.type,
       stars:req.body.stars,
-      emailU:req.body.emailU,
-      emailP:req.body.emailP,
-      productId:req.body.productId
+      userLog:req.body.userLog,
+      profileProd:req.body.profileProd,
+      product:req.body.product
     };
   
     const addReviews = new Review(review);
@@ -125,10 +125,6 @@ router.delete('/:id', async (req, res) => {
   try {
     await Review.findByIdAndRemove(req.params.id);
     res.status(200).send('Review Deleted');
-    /* if (Product.findByIdAndRemove(req.params.id) == true)
-      res.json({status: 1, mssg: 'Product Deleted'});
-    else (Product.findByIdAndRemove(req.params.id) == false)
-      res.json({status: -1, mssg: 'Product Not Deleted'}); */
   } catch (error) {
     console.log(error.message);
     res.status(400).json({status: -1, mssg: error.message});

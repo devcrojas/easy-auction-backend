@@ -9,13 +9,13 @@ const Review = new Schema({
     type: { type: String, required: true },
     stars: { type: Number, required: true },
 
-    emailU: {
+    userLog: {
         type: String
     },
-    emailP: {
+    profileProd: {
         type: String
     },
-    productId: {
+    product: {
         type: Schema.Types.ObjectId
     },
     status: String,
