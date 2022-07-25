@@ -63,14 +63,15 @@ router.post('/', multer.upload.single('file'), async (req, res, next) => {
       lastName: req.body.lastName,
       birthday: req.body.birthday,
       address: {
-        postalCode: req.body.address.postalCode,
+        cpp: req.body.address.cpp,
         street: req.body.address.street,
         suburb: req.body.address.suburb,
-        municipality: req.body.address.municipality,
+        municipaly: req.body.address.municipaly,
         state: req.body.address.state,
       },
       phone: req.body.phone,
       email: req.body.email,
+      password: req.body.password,
       status: req.body.status
     };
 
@@ -109,6 +110,42 @@ router.post('/', multer.upload.single('file'), async (req, res, next) => {
   }
 });
 
+// ACTUALIZAR perfil
+/*router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
+   jwt.verify(req.body.token, process.env.TOKEN_SECRET, async (err, user) => {
+    if (err) {
+      return res.sendStatus(403);
+    } else {
+      //console.log(user);
+      try{
+        //console.log(user.profile);
+        let token = jwt.decode(req.body.token);
+        const updateProfile = {
+          firstName:user.profile.firstName,
+          lastName:user.profile.lastName,
+          birthday:user.profile.birthday,
+          address:{
+            cpp:user.profile.address.cpp,
+            street:user.profile.address.street,
+            suburb:user.profile.address.suburb,
+            municipaly:user.profile.address.municipaly,
+            state:user.profile.address.state
+          },
+          phone:user.profile.phone,
+          email:user.profile.email
+        };
+    
+        await Profile.findByIdAndUpdate(req.params.id, updateProfile);
+        const getProfile = await Profile.findById(req.params.id);
+        token.profile = getProfile;
+        let newToken = jwt.sign(token, process.env.TOKEN_SECRET);
+        res.status(201).send(newToken);
+      }catch(error) {
+        res.status(400).send(error.message);
+      }
+    }
+  });
+}); */
 router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
   try {
     //console.log(req.body);
@@ -118,10 +155,10 @@ router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
       lastName: req.body.profile.lastName,
       birthday: req.body.profile.birthday,
       address: {
-        postalCode: req.body.profile.address.postalCode,
+        cpp: req.body.profile.address.cpp,
         street: req.body.profile.address.street,
         suburb: req.body.profile.address.suburb,
-        municipality: req.body.profile.address.municipality,
+        municipaly: req.body.profile.address.municipaly,
         state: req.body.profile.address.state
       },
       phone: req.body.profile.phone,
@@ -228,4 +265,4 @@ const fileSizeFormatter = (bytes, decimal) => {
 
 module.exports = router;
 
-/* FIN 1.32 */
+/* FIN 1.31 */

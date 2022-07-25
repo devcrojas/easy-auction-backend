@@ -9,13 +9,13 @@ const Review = new Schema({
     type: { type: String, required: true },
     stars: { type: Number, required: true },
 
-    userLog: {
+    emailU: {
         type: String
     },
-    profileProd: {
+    emailP: {
         type: String
     },
-    product: {
+    productId: {
         type: Schema.Types.ObjectId
     },
     status: String,
@@ -25,4 +25,4 @@ const Review = new Schema({
 
 module.exports = mongoose.model('Review', Review);
 
-/* FIN 1.7 */
+/* FIN 1.6 */

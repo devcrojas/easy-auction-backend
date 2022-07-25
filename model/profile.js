@@ -7,14 +7,15 @@ const Profile = new Schema({
     lastName: {type: String, require: false},
     birthday: {type: Date, require: false},
     address: {
-        postalCode: { type: String, require: false },
+        cpp: { type: String, require: false },
         street: { type: String, require: false },
         suburb: { type: String, require: false },
-        municipality: { type: String, require: false },
+        municipaly: { type: String, require: false },
         state: { type: String, require: false }
     },
     phone: { type: String, require: false },
     email: { type: String, required: false },
+    password: { type: String, required: false},
     status: { type: String, default:'Active', required: false },
     file: {
         fileName: {
@@ -38,5 +39,3 @@ const Profile = new Schema({
 { versionKey: false });
 
 module.exports = mongoose.model('Profile', Profile);
-
-/* FIN 1.2 */

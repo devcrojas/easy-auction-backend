@@ -37,6 +37,7 @@ validateSession = () => {
 router.get('/:id', async (req, res) => {
   try {
     const getProduct = await Product.findById(req.params.id).populate([
+      {path: 'email', model: 'Profile'},
       {path: 'profile', model: 'Profile'}
     ]);
     res.status(200).send(getProduct);
@@ -52,6 +53,7 @@ router.get('/', async (req, res) => {
     const getProducts = await Product.find({
       'status': 'active'
     }).populate([
+      {path: 'email', model: 'Profile'},
       {path: 'profile', model: 'Profile'}
     ]);
     res.status(200).send(getProducts);
@@ -65,6 +67,7 @@ router.get('/', async (req, res) => {
 router.get('/all/products', validateSession(), async (req, res) => {
   try{
     const getAllProducts = await Product.find().populate([
+      {path: 'email', model: 'Profile'},
       {path: 'profile', model: 'Profile'}
     ]);
     res.status(200).send(getAllProducts);
@@ -77,12 +80,24 @@ router.get('/all/products', validateSession(), async (req, res) => {
 // Obtener los productos que publico el usuario de la sesion
 router.post('/myproducts', validateSession(), async (req, res) => {
   try{
-    const getMyProducts = await Product.find({
-      'profile': req.body.profile
-    }).populate([/* Populate opcional */
-      {path: 'profile', model: 'Profile'}
-    ]);
-    res.status(200).send(getMyProducts);
+    if(req.body.email){
+      const getMyProducts = await Product.find({
+        'email': req.body.email
+      }).populate([/* Populate opcional */
+        {path: 'email', model: 'Profile'},
+        {path: 'profile', model: 'Profile'}
+      ]);
+      res.status(200).send(getMyProducts);
+    }
+    if(req.body.profile){
+      const getMyProducts = await Product.find({
+        'profile': req.body.profile
+      }).populate([/* Populate opcional */
+        {path: 'email', model: 'Profile'},
+        {path: 'profile', model: 'Profile'}
+      ]);
+      res.status(200).send(getMyProducts);
+    }
     
   }catch(error) {
     console.log(error.message);
@@ -96,6 +111,7 @@ router.post('/myearnedproducts', async (req, res) => {
     const getEarnedProducts = await Product.find({
       'profileWin': req.body.profileWin
     }).populate([
+      {path: 'email', model: 'Profile'},
       {path: 'profile', model: 'Profile'}
     ]);
     res.status(200).send(getEarnedProducts);
@@ -108,8 +124,8 @@ router.post('/myearnedproducts', async (req, res) => {
 // AGREGAR un nuevo producto
 router.post('/', validateSession(), fields, async (req, res, next) => {
   try{
-    //Se relaciona el profile con la bd de profile y encuentra la coincidencia
-    //let sellerObject = await Profile.aggregate([{ $match: { profile: req.body.profile } }]);
+    //Se relaciona el email con la bd de profile y encuentra la coincidencia
+    //let sellerObject = await Profile.aggregate([{ $match: { email: req.body.email } }]);
     let filesArray = [];
 
     const product = {
@@ -125,9 +141,14 @@ router.post('/', validateSession(), fields, async (req, res, next) => {
         fileType: req.files['file'][0].mimetype,
         fileSize: fileSizeFormatter(req.files['file'][0].size, 2) // 0.00
       },
-      profile: req.body.profile,
       profileWin: ''
     };
+    if(req.body.email){
+      product.email = req.body.email;
+    }
+    if(req.body.profile){
+      product.profile = req.body.profile;
+    }
     if(req.files['files']) {
       req.files['files'].forEach(element => {
         const image = {
@@ -230,8 +251,8 @@ router.put('/:id', validateSession(), fields, async (req, res, next) => {
     }
     */
 
-    //Se relaciona el profile con la bd de profile y encuentra la coincidencia
-    //let sellerObject = await Profile.aggregate([{ $match: { profile: req.body.profile } }]);
+    //Se relaciona el email con la bd de profile y encuentra la coincidencia
+    //let sellerObject = await Profile.aggregate([{ $match: { email: req.body.email } }]);
     let filesArray = [];
 
     const updateProduct = {
@@ -361,4 +382,4 @@ const fileSizeFormatter = (bytes, decimal) => {
 
 module.exports = router;
 
-/* FIN 1.60 */
+/* FIN 1.59 */
