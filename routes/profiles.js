@@ -85,44 +85,8 @@ router.post('/', multer.upload.single('file'), async (req, res, next) => {
 });
 
 // ACTUALIZAR perfil
-/*router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
-   jwt.verify(req.body.token, process.env.TOKEN_SECRET, async (err, user) => {
-    if (err) {
-      return res.sendStatus(403);
-    } else {
-      //console.log(user);
-      try{
-        //console.log(user.profile);
-        let token = jwt.decode(req.body.token);
-        const updateProfile = {
-          firstName:user.profile.firstName,
-          lastName:user.profile.lastName,
-          birthday:user.profile.birthday,
-          address:{
-            cpp:user.profile.address.cpp,
-            street:user.profile.address.street,
-            suburb:user.profile.address.suburb,
-            municipaly:user.profile.address.municipaly,
-            state:user.profile.address.state
-          },
-          phone:user.profile.phone,
-          email:user.profile.email
-        };
-    
-        await Profile.findByIdAndUpdate(req.params.id, updateProfile);
-        const getProfile = await Profile.findById(req.params.id);
-        token.profile = getProfile;
-        let newToken = jwt.sign(token, process.env.TOKEN_SECRET);
-        res.status(201).send(newToken);
-      }catch(error) {
-        res.status(400).send(error.message);
-      }
-    }
-  });
-}); */
 router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
   try {
-    //console.log(req.body);
     //console.log(user.profile);
     const updateProfile = {
       firstName: req.body.profile.firstName,
@@ -140,8 +104,9 @@ router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
     };
 
     await Profile.findByIdAndUpdate(req.params.id, updateProfile);
-    res.status(200).json({ status: 1, mssg: 'Successfully Upgraded Profile!', update: update });
+    res.status(200).json({ status: 1, mssg: 'Successfully Upgraded Profile!'});
   } catch (error) {
+    console.log(error);
     res.status(400).json({status: -1, mssg:error.message});
   }
 });

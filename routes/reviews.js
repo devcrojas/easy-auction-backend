@@ -82,11 +82,11 @@ router.put('/:id', async (req, res) => {
   try {
     //let userObject = await Profile.aggregate([{ $match: { email: req.body.userSession } }]);
     //let profileObject = await Profile.aggregate([{ $match: { email: req.body.profile } }]);
-
     const updateReview = {
       comment:req.body.comment,
       type:req.body.type,
       stars:req.body.stars,
+      status: req.body.status
     };
     await Review.findByIdAndUpdate(req.params.id, updateReview);
     res.status(201).send('Successfully Upgraded Review!');
