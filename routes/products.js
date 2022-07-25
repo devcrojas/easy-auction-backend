@@ -52,7 +52,8 @@ router.get('/', async (req, res) => {
     const getProducts = await Product.find({
       'status': 'active'
     }).populate([
-      {path: 'email', model: 'Profile'}
+      {path: 'email', model: 'Profile'},
+      {path: 'profile', model: 'Profile'}
     ]);
     res.status(200).send(getProducts);
   }catch(error) {
@@ -65,7 +66,8 @@ router.get('/', async (req, res) => {
 router.get('/all/products', validateSession(), async (req, res) => {
   try{
     const getAllProducts = await Product.find().populate([
-      {path: 'email', model: 'Profile'}
+      {path: 'email', model: 'Profile'},
+      {path: 'profile', model: 'Profile'}
     ]);
     res.status(200).send(getAllProducts);
   }catch(error) {
@@ -77,12 +79,25 @@ router.get('/all/products', validateSession(), async (req, res) => {
 // Obtener los productos que publico el usuario de la sesion
 router.post('/myproducts', validateSession(), async (req, res) => {
   try{
-    const getMyProducts = await Product.find({
-      'email': req.body.email
-    }).populate([/* Populate opcional */
-      {path: 'email', model: 'Profile'}
-    ]);
-    res.status(200).send(getMyProducts);
+    if(req.body.email){
+      const getMyProducts = await Product.find({
+        'email': req.body.email
+      }).populate([/* Populate opcional */
+        {path: 'email', model: 'Profile'},
+        {path: 'profile', model: 'Profile'}
+      ]);
+      res.status(200).send(getMyProducts);
+    }
+    if(req.body.profile){
+      const getMyProducts = await Product.find({
+        'profile': req.body.profile
+      }).populate([/* Populate opcional */
+        {path: 'email', model: 'Profile'},
+        {path: 'profile', model: 'Profile'}
+      ]);
+      res.status(200).send(getMyProducts);
+    }
+    
   }catch(error) {
     console.log(error.message);
     res.status(400).json({status: -1, mssg: error.message});
@@ -95,7 +110,8 @@ router.post('/myearnedproducts', async (req, res) => {
     const getEarnedProducts = await Product.find({
       'profileWin': req.body.profileWin
     }).populate([
-      {path: 'email', model: 'Profile'}
+      {path: 'email', model: 'Profile'},
+      {path: 'profile', model: 'Profile'}
     ]);
     res.status(200).send(getEarnedProducts);
   }catch(error) {
@@ -124,9 +140,14 @@ router.post('/', validateSession(), fields, async (req, res, next) => {
         fileType: req.files['file'][0].mimetype,
         fileSize: fileSizeFormatter(req.files['file'][0].size, 2) // 0.00
       },
-      email: req.body.email,
       profileWin: ''
     };
+    if(req.body.email){
+      product.email = req.body.email;
+    }
+    if(req.body.profile){
+      product.profile = req.body.profile;
+    }
     if(req.files['files']) {
       req.files['files'].forEach(element => {
         const image = {
@@ -174,7 +195,8 @@ router.put('/auctionauth/:id', validateSession(), async (req, res, next) => {
     let dateAuthProd = '';
     const updateAuthProduct = {
       status:req.body.status,
-      adminAuth:req.body.adminAuth
+      adminAuth:req.body.adminAuth,
+      initialD:req.body.dateAuthProd
     };
     dateAuthProd = req.body.dateAuthProd;
     let updateAuth = await Product.updateOne({_id : req.params.id} ,{ $set : updateAuthProduct});
@@ -359,4 +381,4 @@ const fileSizeFormatter = (bytes, decimal) => {
 
 module.exports = router;
 
-/* FIN 1.57 */
+/* FIN 1.59 */

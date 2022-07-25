@@ -45,6 +45,9 @@ const Product = new Schema({
     email: {
         type: String
     },
+    profile: {
+        type: String
+    },
     logAuthProd: {type: Object, required: false},
     profileWin: String
 },
