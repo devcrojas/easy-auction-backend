@@ -1,6 +1,28 @@
 const express = require('express');
 
 const router = express.Router();
+const jwt = require('jsonwebtoken');
+const Points = require('../model/points');
+
+
+validateSession = () => {
+  return (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    if (authHeader) {
+      const token = authHeader.split(' ')[1];
+      jwt.verify(token, process.env.TOKEN_SECRET, (err, user) => {
+        if (err) {
+          return res.sendStatus(403);
+        }
+        //console.log(user);
+        req.user = user;
+        next();
+      });
+    } else {
+      res.sendStatus(401);
+    }
+  };
+}
 
 // Offer Model
 const Offer = require('../model/offer');
@@ -32,17 +54,21 @@ router.get('/', async (req, res) => {
 });
 
 // AGREGAR oferta
-router.post('/', async (req, res) => {
+router.post('/apply', validateSession(), async (req, res) => {
   //console.log(req.body);
   try {
-    const offer = {
+    /*/const offer = {
       offer:req.body.offer,
       profile:req.body.profile
     };
   
     const addOffer = new Offer(offer);
-    await addOffer.save();
-    res.status(201).send('Successfully Upgraded Offer!');
+    await addOffer.save();/*/
+    let userPoints = await Points.aggregate([{$match: {user: req.user.id} }]);
+
+    console.log(req.body);
+    console.log(userPoints);
+    res.status(201).json({status:1, mssh : "Hola"});
   } catch (error) {
     res.status(400).json({status: -1, mssg: error.message});
   }
