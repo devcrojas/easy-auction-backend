@@ -23,16 +23,34 @@ validateSession = () => {
   };
 }
 /* register */
-router.post('/user/register', function (req, res, next) {
+router.post('/user/register', async (req, res, next) => {
   //.......Algoritmo
   //res.send("Respuesta del algorimo")
-  let insert = { _id: req.body.email, name: req.body.name, firstName: req.body.firstname, email: req.body.email, password: req.body.password, isAdmin: false }
-  var model = new Login(insert);
-  model.save(function (err) {
-    if (err) return console.log(err);
-  });
-  //alert("Usuario registrado")
-  res.send(insert);
+  try {
+    if (req.body.conditions === true) {
+      let event = new Date();
+      let insert = {
+        _id: req.body.email,
+        name: req.body.name,
+        firstName: req.body.firstname,
+        email: req.body.email,
+        password: req.body.password,
+        isAdmin: false,
+        logConditions: {
+          accept: req.body.conditions,
+          dateConditions: event.toISOString()
+        }
+      }
+      var model = new Login(insert);
+      await model.save();
+      res.status(200).send(insert);
+    } else {
+      res.status(400).send(insert);
+    }
+  } catch(error){
+    console.log(error);
+    res.status(400).send(error.message);
+  }
 });
 /*  */
 
@@ -91,7 +109,7 @@ router.post("/getUserByEmail", async function (req, res, next) {
     console.log(req.body);
     if (req.body.correoSend !== "") {
       //Validar a la base de datos el usuario y la contraseña
-      let user = await Login.aggregate([{ $match: { email: req.body.correoSend} }]);
+      let user = await Login.aggregate([{ $match: { email: req.body.correoSend } }]);
       // console.log(login);
       /*/if (req.body.user == "crojas" && req.body.pass == "26394")
         res.json({ status: 1, mssg: "Login Exitoso!" });
@@ -101,7 +119,7 @@ router.post("/getUserByEmail", async function (req, res, next) {
       if (user.length > 0) {
         //console.log(login);
         delete user[0].password;
-        res.json({status: 1, user});
+        res.json({ status: 1, user });
       } else
         res.json({ status: -1, mssg: "Usuario incorrecto!" });
     } else {
