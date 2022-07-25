@@ -38,3 +38,5 @@ const Profile = new Schema({
 { versionKey: false });
 
 module.exports = mongoose.model('Profile', Profile);
+
+/* FIN 1.2 */
