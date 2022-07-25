@@ -8,7 +8,8 @@ const ProdSchema = new Schema({
     name: { type: String, require: true },
     firstName: {type: String, require: true},
     password: { type: String, required: true },
-    isAdmin: { type: Boolean, required: false }
+    isAdmin: { type: Boolean, required: false },
+    logConditions: {type: Object, require: true},
 });
 
 module.exports = mongoose.model('logins', ProdSchema);
