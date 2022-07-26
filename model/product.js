@@ -15,7 +15,8 @@ const Product = new Schema({
     price: { type: {
         initialP: { type: Number, required: false },
         buyNow: { type: Number, required: false },
-        offered: { type: Number, required: false }
+        offered: { type: Number, required: false },
+        logOffered: {type: Object, required: false}
     }},
     auctionDate: { type: {
         create: { type: Date, required: false }, /* Fecha de creacion de la subasta y en que se solicito la subasta */

@@ -75,16 +75,35 @@ router.post('/apply', validateSession(), async (req, res) => {
       console.log("Saldo Suficiente");
       //Valida que elproducto no tenga actividad de otro usuario para evitar errores.
       if (typeof productUpdate.offerActivity === "undefined" || productUpdate.offerActivity === false) {
+        //Preparando para update
+        delete productUpdate._id;
         //Se modifica la actividad a true para evitar que otros usuarios intenten ofertar.
+        productUpdate.offerActivity = true;
         let upd = await Product.updateOne({ _id: productId }, { $set: { offerActivity: true } });
+        console.log("Bloqueando producto");
         console.log(upd);
 
-        //Restar puntos y agregar log de decremento y actualizar BD
         //agregar offered a producto.
-        //Agregar log de offered a producto.
-
-        //Primer funcion
-        res.status(201).json({ status: 1, mssg: "Saldo suficiente." });
+        if (typeof req.body.product.price.offered === "undefined" || req.body.product.price.offered < offered) {
+          let log = { date: new Date(), offered: offered, user: req.user.id };
+          let logPoints = { date: new Date(), decrement: offered, user: req.user.id, beforeDecrement: userPoints[0].pts, afterDecrement: (userPoints[0].pts-offered) };
+          productUpdate.price.offered = offered;
+          //let updOffered = await Product.updateOne({ _id: productId }, { $set: { "price.offered": offered } });
+          //Agregar log de offered a producto.
+          productUpdate.price.logOffered = log;
+          //let updLogOffered = await Product.updateOne({ _id: productId }, { $set: { "price.logOffered": log } });
+          //Restar puntos y agregar log de decremento y actualizar BD
+          userPoints[0].pts -= offered;
+          userPoints[0].logsDecrement.push(logPoints);
+          let updDecrement = await Points.updateOne({_id: userPoints[0]._id}, {$set: userPoints[0]});
+          //Desbloqueando producto
+          productUpdate.offerActivity = false;
+          let upd = await Product.updateOne({ _id: productId }, { $set: productUpdate});
+           //Primer funcion
+          res.status(201).json({ status: 1, mssg: "La oferta se colocó exitosamente.", points: userPoints[0], product:productUpdate  });
+        } else {
+          res.status(201).json({ status: -1, mssg: "Tu oferta es menor a la última oferta del producto." });
+        }
       } else {
         //No permite el cambio
         console.log("Se esta ejecutando un cambio...");
@@ -95,9 +114,8 @@ router.post('/apply', validateSession(), async (req, res) => {
       console.log("Saldo Insuficiente");
       res.status(201).json({ status: -1, mssg: "Saldo Insuficiente." });
     }
-
-    console.log(userPoints);
-    console.log(productUpdate.offerActivity);
+    //console.log(userPoints);
+    //console.log(productUpdate.offerActivity);
   } catch (error) {
     console.log(error.message);
     res.status(400).json({ status: -1, mssg: error.message });
