@@ -34,11 +34,15 @@ validateSession = () => {
 router.get('/:id', async (req, res) => {
   try {
     const getProfile = await Profile.findById(req.params.id);
-    res.send(getProfile);
-    res.status(200);
+    if (getProfile === null) {
+      res.status(200).json({ status: -1, mssg: 'Perfil no creado' });
+    } else {
+      res.send(getProfile);
+      res.status(200).json({ status: 1, mssg: 'Perfil encontrado' });;
+    }
   } catch (error) {
     console.log(error.message);
-    res.status(400).json({status: -1, mssg: 'Perfil aun no creado'});
+    res.status(400).json({ status: -1, mssg: 'Perfil no creado' });
   }
 });
 
@@ -50,7 +54,7 @@ router.get('/', async (req, res) => {
     res.status(200).send(getProfiles);
   } catch (error) {
     console.log(error.message);
-    res.status(400).json({status: -1, mssg: error.message});
+    res.status(400).json({ status: -1, mssg: error.message });
   }
 });
 
@@ -63,10 +67,10 @@ router.post('/', multer.upload.single('file'), async (req, res, next) => {
       lastName: req.body.lastName,
       birthday: req.body.birthday,
       address: {
-        cpp: req.body.address.cpp,
+        cp: req.body.address.cp,
         street: req.body.address.street,
         suburb: req.body.address.suburb,
-        municipaly: req.body.address.municipaly,
+        municipality: req.body.address.municipality,
         state: req.body.address.state,
       },
       phone: req.body.phone,
@@ -101,12 +105,12 @@ router.post('/', multer.upload.single('file'), async (req, res, next) => {
     } */
     const addProfile = new Profile(profile);
     await addProfile.save(function (err) {
-      if(err) return console.log(err);
+      if (err) return console.log(err);
     });
     res.status(201).send('Profile Successfully Added!');
   } catch (error) {
     console.log(error.message);
-    res.status(400).json({status: -1, mssg: error.message});
+    res.status(400).json({ status: -1, mssg: error.message });
   }
 });
 
@@ -119,10 +123,10 @@ router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
       lastName: req.body.profile.lastName,
       birthday: req.body.profile.birthday,
       address: {
-        cpp: req.body.profile.address.cpp,
+        cp: req.body.profile.address.cp,
         street: req.body.profile.address.street,
         suburb: req.body.profile.address.suburb,
-        municipaly: req.body.profile.address.municipaly,
+        municipality: req.body.profile.address.municipality,
         state: req.body.profile.address.state
       },
       phone: req.body.profile.phone,
@@ -133,7 +137,7 @@ router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
     res.status(200).json({ status: 1, mssg: 'Successfully Upgraded Profile!' });
   } catch (error) {
     console.log(error.message);
-    res.status(400).json({status: -1, mssg:error.message});
+    res.status(400).json({ status: -1, mssg: error.message });
   }
 });
 
@@ -155,7 +159,7 @@ router.put('/image/:id', multer.upload.single('file'), async (req, res, next) =>
         fileSize: fileSizeFormatter(req.file.size, 2) // 0.00
       }
       await Profile.findByIdAndUpdate(req.params.id, updateFileProfile);
-      if(photoPath !== 'uploads\\profiles\\noUserImage.jpg'){
+      if (photoPath !== 'uploads\\profiles\\noUserImage.jpg') {
         try {
           fs.unlinkSync(photoPath);
         } catch (error) {
@@ -164,7 +168,7 @@ router.put('/image/:id', multer.upload.single('file'), async (req, res, next) =>
       } /* else {
         console.log("Este usuario no tiene foto de perfil!");
       } */
-      
+
       res.status(201).send('Successfully Upgraded Image Profile!');
 
       const getProfile = await Profile.findById(req.params.id);
@@ -173,7 +177,7 @@ router.put('/image/:id', multer.upload.single('file'), async (req, res, next) =>
       });
     } catch (error) {
       console.log(error.message);
-      res.status(400).json({status: -1, mssg: error.message});
+      res.status(400).json({ status: -1, mssg: error.message });
     }
   } else {
     res.status(400).json({ status: -1, mssg: "No se detecto ninguna imagen" });
@@ -201,7 +205,7 @@ router.delete('/:id', validateSession(), async (req, res) => {
     res.status(200).send('Profile Deleted');
   } catch (error) {
     console.log(error.message);
-    res.status(400).json({status: -1, mssg: error.message});
+    res.status(400).json({ status: -1, mssg: error.message });
   }
 });
 
