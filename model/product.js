@@ -18,9 +18,11 @@ const Product = new Schema({
         offered: { type: Number, required: false }
     }},
     auctionDate: { type: {
-        initialD: { type: Date, required: false }, /* True: Fehca de inicio al autorizar subasta */
-        final: { type: Date, required: false }
+        create: { type: Date, required: false }, /* Fecha de creacion de la subasta y en que se solicito la subasta */
+        initialD: { type: Date, required: false }, /* True: Fecha en que se inicia subasta (programada) */
+        final: { type: Date, required: false } /* Fecha cierre de la subasta */
     }},
+    adminAuth: String,
     file: {
         fileName: {
             type: String,
@@ -43,10 +45,15 @@ const Product = new Schema({
     email: {
         type: String
     },
-    offerActivity: { type: Boolean, required: false }
+    offerActivity: { type: Boolean, required: false },
+    profile: {
+        type: String
+    },
+    logAuthProd: {type: Object, required: false},
+    profileWin: String
 },
 { versionKey: false });
 
 module.exports = mongoose.model('Product', Product);
 
-/* FIN 1.4 */
+/* FIN 1.5 */

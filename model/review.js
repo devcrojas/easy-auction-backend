@@ -5,10 +5,10 @@ let = dn = Date.now();
 let d = new Date(dn);
 
 const Review = new Schema({
-    
-    comment: { type: String, required: false },
-    type: { type: String, required: false },
-    stars: { type: Number, required: false },
+    comment: { type: String, required: true },
+    type: { type: String, required: true },
+    stars: { type: Number, required: true },
+
     emailU: {
         type: String
     },
@@ -18,8 +18,8 @@ const Review = new Schema({
     productId: {
         type: Schema.Types.ObjectId
     },
-    datePublished: { type: String, default: d.toLocaleDateString() },
-    status: {type: String, required: false}
+    status: String,
+    datePublished: { type: String, default: d.toLocaleDateString() }
 },
 { versionKey: false });
 

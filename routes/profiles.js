@@ -1,5 +1,6 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
+const fs = require('fs');
 
 const router = express.Router();
 
@@ -7,6 +8,26 @@ const router = express.Router();
 const Profile = require('../model/profile');
 // Service Multer
 const multer = require('../middleware/multerProfiles')
+
+// Validacion de sesion
+validateSession = () => {
+  return (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    if (authHeader) {
+      const token = authHeader.split(' ')[1];
+      jwt.verify(token, process.env.TOKEN_SECRET, (err, user) => {
+        if (err) {
+          return res.sendStatus(403);
+        }
+        //console.log(user);
+        req.user = user;
+        next();
+      });
+    } else {
+      res.sendStatus(401);
+    }
+  };
+}
 
 
 // OBTENER UN SOLO perfil
@@ -16,6 +37,7 @@ router.get('/:id', async (req, res) => {
     res.send(getProfile);
     res.status(200);
   } catch (error) {
+    console.log(error.message);
     res.status(400).json({status: -1, mssg: 'Perfil aun no creado'});
   }
 });
@@ -27,6 +49,7 @@ router.get('/', async (req, res) => {
 
     res.status(200).send(getProfiles);
   } catch (error) {
+    console.log(error.message);
     res.status(400).json({status: -1, mssg: error.message});
   }
 });
@@ -77,16 +100,19 @@ router.post('/', multer.upload.single('file'), async (req, res, next) => {
       } 
     } */
     const addProfile = new Profile(profile);
-    await addProfile.save();
+    await addProfile.save(function (err) {
+      if(err) return console.log(err);
+    });
     res.status(201).send('Profile Successfully Added!');
   } catch (error) {
+    console.log(error.message);
     res.status(400).json({status: -1, mssg: error.message});
   }
 });
 
-// ACTUALIZAR perfil
 router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
   try {
+    //console.log(req.body);
     //console.log(user.profile);
     const updateProfile = {
       firstName: req.body.profile.firstName,
@@ -106,7 +132,7 @@ router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
     await Profile.findByIdAndUpdate(req.params.id, updateProfile);
     res.status(200).json({ status: 1, mssg: 'Successfully Upgraded Profile!' });
   } catch (error) {
-    console.log(error);
+    console.log(error.message);
     res.status(400).json({status: -1, mssg:error.message});
   }
 });
@@ -116,6 +142,9 @@ router.put('/image/:id', multer.upload.single('file'), async (req, res, next) =>
   //console.log(req.file);
   if (req.file && req.file.originalname) {
     try {
+      const getProfileFile = await Profile.findById(req.params.id);
+      //console.log(getProfileFile.file);
+      const photoPath = getProfileFile.file.filePath;
       //console.log(req.body.profile);
       //console.log(user.profile);
       const updateFileProfile = {};
@@ -126,6 +155,16 @@ router.put('/image/:id', multer.upload.single('file'), async (req, res, next) =>
         fileSize: fileSizeFormatter(req.file.size, 2) // 0.00
       }
       await Profile.findByIdAndUpdate(req.params.id, updateFileProfile);
+      if(photoPath !== 'uploads\\profiles\\noUserImage.jpg'){
+        try {
+          fs.unlinkSync(photoPath);
+        } catch (error) {
+          console.log(error.message);
+        }
+      } /* else {
+        console.log("Este usuario no tiene foto de perfil!");
+      } */
+      
       res.status(201).send('Successfully Upgraded Image Profile!');
 
       const getProfile = await Profile.findById(req.params.id);
@@ -133,23 +172,35 @@ router.put('/image/:id', multer.upload.single('file'), async (req, res, next) =>
         res.json({ token })
       });
     } catch (error) {
+      console.log(error.message);
       res.status(400).json({status: -1, mssg: error.message});
     }
   } else {
-    res.json({ status: -1, mssg: "No se detecto ninguna imagen" });
+    res.status(400).json({ status: -1, mssg: "No se detecto ninguna imagen" });
   }
 });
 
 // ELIMINAR un perfil
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', validateSession(), async (req, res) => {
   try {
+    const getProd = await Profile.findById(req.params.id);
+    //console.log(getProfileFile.file);
+    const nameDir = getProd._id;
+    const imgPath = getProd.file.filePath;
     await Profile.findByIdAndRemove(req.params.id);
+    try {
+      fs.unlinkSync(imgPath);
+    } catch (error) {
+      console.log(error.message);
+    }
+    try {
+      fs.rmdirSync('./uploads/profiles/' + nameDir);
+    } catch (error) {
+      console.log(error.message);
+    }
     res.status(200).send('Profile Deleted');
-    /* if (Product.findByIdAndRemove(req.params.id) == true)
-      res.json({status: 1, mssg: 'Product Deleted'});
-    else (Product.findByIdAndRemove(req.params.id) == false)
-      res.json({status: -1, mssg: 'Product Not Deleted'}); */
   } catch (error) {
+    console.log(error.message);
     res.status(400).json({status: -1, mssg: error.message});
   }
 });
@@ -177,3 +228,5 @@ const fileSizeFormatter = (bytes, decimal) => {
 }
 
 module.exports = router;
+
+/* FIN 1.31 */
