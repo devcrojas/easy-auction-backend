@@ -45,6 +45,7 @@ const Product = new Schema({
     email: {
         type: String
     },
+    offerActivity: { type: Boolean, required: false },
     profile: {
         type: String
     },
