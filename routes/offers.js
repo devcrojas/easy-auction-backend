@@ -63,7 +63,7 @@ router.post('/apply', validateSession(), async (req, res) => {
       offer:req.body.offer,
       profile:req.body.profile
     };
-  
+    //Primer validacion deberá ser que el que vaya ganando la subasta no puede volver a ofertar.
     const addOffer = new Offer(offer);
     await addOffer.save();/*/
     let userPoints = await Points.aggregate([{ $match: { user: req.user.id } }]);
@@ -85,12 +85,16 @@ router.post('/apply', validateSession(), async (req, res) => {
 
         //agregar offered a producto.
         if (typeof req.body.product.price.offered === "undefined" || req.body.product.price.offered < offered) {
-          let log = { date: new Date(), offered: offered, user: req.user.id };
-          let logPoints = { date: new Date(), decrement: offered, user: req.user.id, beforeDecrement: userPoints[0].pts, afterDecrement: (userPoints[0].pts-offered) };
+          let dateLog = new Date();
+          let log = { date: dateLog, offered: offered, user: req.user.id };
+          let logPoints = { date: dateLog, decrement: offered, user: req.user.id, beforeDecrement: userPoints[0].pts, afterDecrement: (userPoints[0].pts-offered) };
           productUpdate.price.offered = offered;
           //let updOffered = await Product.updateOne({ _id: productId }, { $set: { "price.offered": offered } });
           //Agregar log de offered a producto.
-          productUpdate.price.logOffered = log;
+          if(typeof productUpdate.price.logOffered === "undefined") 
+            productUpdate.price.logOffered = [];
+            
+          productUpdate.price.logOffered.push(log)
           //let updLogOffered = await Product.updateOne({ _id: productId }, { $set: { "price.logOffered": log } });
           //Restar puntos y agregar log de decremento y actualizar BD
           userPoints[0].pts -= offered;
@@ -98,6 +102,7 @@ router.post('/apply', validateSession(), async (req, res) => {
           let updDecrement = await Points.updateOne({_id: userPoints[0]._id}, {$set: userPoints[0]});
           //Desbloqueando producto
           productUpdate.offerActivity = false;
+          productUpdate.price.winOffered = req.user.id;
           let upd = await Product.updateOne({ _id: productId }, { $set: productUpdate});
            //Primer funcion
           res.status(201).json({ status: 1, mssg: "La oferta se colocó exitosamente.", points: userPoints[0], product:productUpdate  });
