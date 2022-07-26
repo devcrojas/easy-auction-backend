@@ -193,11 +193,12 @@ router.put('/offered/:id', async (req, res, next) => {
 // Autorizar subasta
 router.put('/auctionauth/:id', validateSession(), async (req, res, next) => {
   try{
+    const getProductAuth = await Product.findById(req.params.id);
     let dateAuthProd = '';
     const updateAuthProduct = {
       status:req.body.status,
       adminAuth:req.body.adminAuth,
-      initialD:req.body.dateAuthProd
+      auctionDate:{ create:getProductAuth.auctionDate.create, final:getProductAuth.auctionDate.final, initialD:req.body.dateAuthProd }
     };
     dateAuthProd = req.body.dateAuthProd;
     let updateAuth = await Product.updateOne({_id : req.params.id} ,{ $set : updateAuthProduct});
