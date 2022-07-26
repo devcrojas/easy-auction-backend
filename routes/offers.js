@@ -3,6 +3,8 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const Points = require('../model/points');
+const Product = require('../model/product');
+
 
 
 validateSession = () => {
@@ -31,12 +33,12 @@ const Offer = require('../model/offer');
 router.get('/:id', async (req, res) => {
   try {
     const getOffer = await Offer.findById(req.params.id).populate([
-      {path: 'profile', model: 'Profile'},
-      {path: 'product', model: 'Product'}
+      { path: 'profile', model: 'Profile' },
+      { path: 'product', model: 'Product' }
     ]);
     res.status(200).send(getOffer);
   } catch (error) {
-    res.status(400).json({status: -1, mssg: error.message});
+    res.status(400).json({ status: -1, mssg: error.message });
   }
 });
 
@@ -44,12 +46,12 @@ router.get('/:id', async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     const getReviews = await Offer.find().populate([
-      {path: 'profile', model: 'Profile'},
-      {path: 'product', model: 'Product'}
+      { path: 'profile', model: 'Profile' },
+      { path: 'product', model: 'Product' }
     ]);
     res.status(200).send(getReviews);
   } catch (error) {
-    res.status(400).json({status: -1, mssg: error.message});
+    res.status(400).json({ status: -1, mssg: error.message });
   }
 });
 
@@ -64,13 +66,41 @@ router.post('/apply', validateSession(), async (req, res) => {
   
     const addOffer = new Offer(offer);
     await addOffer.save();/*/
-    let userPoints = await Points.aggregate([{$match: {user: req.user.id} }]);
+    let userPoints = await Points.aggregate([{ $match: { user: req.user.id } }]);
+    let productId = req.body.product._id;
+    let offered = req.body.offered;
+    let productUpdate = await Product.findById(productId);
+    //Valida si tiene saldo suficiente...
+    if (offered <= userPoints[0].pts) {
+      console.log("Saldo Suficiente");
+      //Valida que elproducto no tenga actividad de otro usuario para evitar errores.
+      if (typeof productUpdate.offerActivity === "undefined" || productUpdate.offerActivity === false) {
+        //Se modifica la actividad a true para evitar que otros usuarios intenten ofertar.
+        let upd = await Product.updateOne({ _id: productId }, { $set: { offerActivity: true } });
+        console.log(upd);
 
-    console.log(req.body);
+        //Restar puntos y agregar log de decremento y actualizar BD
+        //agregar offered a producto.
+        //Agregar log de offered a producto.
+
+        //Primer funcion
+        res.status(201).json({ status: 1, mssg: "Saldo suficiente." });
+      } else {
+        //No permite el cambio
+        console.log("Se esta ejecutando un cambio...");
+        res.status(201).json({ status: -1, mssg: "Hay alguien mas ofertando intenta mas tarde.." });
+
+      }
+    } else {
+      console.log("Saldo Insuficiente");
+      res.status(201).json({ status: -1, mssg: "Saldo Insuficiente." });
+    }
+
     console.log(userPoints);
-    res.status(201).json({status:1, mssh : "Hola"});
+    console.log(productUpdate.offerActivity);
   } catch (error) {
-    res.status(400).json({status: -1, mssg: error.message});
+    console.log(error.message);
+    res.status(400).json({ status: -1, mssg: error.message });
   }
 });
 
@@ -78,8 +108,8 @@ router.post('/apply', validateSession(), async (req, res) => {
 router.put('/:id', async (req, res) => {
   try {
     const updateOffer = {
-      offer:req.body.offer,
-      profile:req.body.profile
+      offer: req.body.offer,
+      profile: req.body.profile
     };
     await Offer.findByIdAndUpdate(req.params.id, updateOffer);
     res.status(201).send('Successfully Upgraded Offer!');
@@ -88,7 +118,7 @@ router.put('/:id', async (req, res) => {
     else (Product.findByIdAndUpdate(req.params.id, newProduct) == false)
       res.json({status: -1, mssg: 'Product Not Updated'}); */
   } catch (error) {
-    res.status(400).json({status: -1, mssg: error.message});
+    res.status(400).json({ status: -1, mssg: error.message });
   }
 });
 
@@ -102,7 +132,7 @@ router.delete('/:id', async (req, res) => {
     else (Product.findByIdAndRemove(req.params.id) == false)
       res.json({status: -1, mssg: 'Product Not Deleted'}); */
   } catch (error) {
-    res.status(400).json({status: -1, mssg: error.message});
+    res.status(400).json({ status: -1, mssg: error.message });
   }
 });
 

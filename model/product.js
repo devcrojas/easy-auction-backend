@@ -42,7 +42,8 @@ const Product = new Schema({
     files: [Object],
     email: {
         type: String
-    }
+    },
+    offerActivity: { type: Boolean, required: false }
 },
 { versionKey: false });
 
