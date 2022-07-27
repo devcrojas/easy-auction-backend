@@ -16,6 +16,7 @@ const Product = new Schema({
         initialP: { type: Number, required: false },
         buyNow: { type: Number, required: false },
         offered: { type: Number, required: false },
+        winOffered: {type: String, required: false},
         logOffered: {type: Object, required: false}
     }},
     phase: { type: String, required: false },
