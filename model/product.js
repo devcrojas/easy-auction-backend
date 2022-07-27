@@ -18,6 +18,7 @@ const Product = new Schema({
         offered: { type: Number, required: false },
         logOffered: {type: Object, required: false}
     }},
+    phase: { type: String, required: false },
     auctionDate: { type: {
         create: { type: Date, required: false }, /* Fecha de creacion de la subasta y en que se solicito la subasta */
         initialD: { type: Date, required: false }, /* True: Fecha en que se inicia subasta (programada) */
@@ -57,4 +58,4 @@ const Product = new Schema({
 
 module.exports = mongoose.model('Product', Product);
 
-/* FIN 1.5 */
+/* FIN 1.51 */
