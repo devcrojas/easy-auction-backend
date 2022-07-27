@@ -12,6 +12,8 @@ var middlewareAuth = require('./middleware/auth');
 var points = require('./routes/points');
 const mongoose = require('mongoose');
 var middlewareAuthClass = new middlewareAuth();
+const socketIo = require("socket.io");
+var Product = require("./model/product")
 
 var app = express();
 
@@ -34,11 +36,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 const URI = 'mongodb+srv://easyauction:easysoft@cluster0.tuva4.mongodb.net/Easy?retryWrites=true&w=majority';
 
-mongoose.connect(URI, {useNewUrlParser: true, dbName: "Easy"})
+mongoose.connect(URI, { useNewUrlParser: true, dbName: "Easy" })
   .then(db => console.log('BD Conectada'))
   .catch(error => console.error(error));
 
-app.use(express.static( path.join(__dirname,"../easy-auction-frontend/build")));
+app.use(express.static(path.join(__dirname, "../easy-auction-frontend/build")));
 
 // Routes
 app.use('/api/', indexRouter);
@@ -49,11 +51,11 @@ app.use('/api/products', require('./routes/products'));
 app.use('/api/offers', require('./routes/offers'));
 app.use('/api/points', require('./routes/points'));
 app.use('/api/auth', authRouter);
-  
+
 app.get("*", (req, res) => {
   res.sendFile(
     path.join(__dirname, "../easy-auction-frontend/build/index.html")
-);
+  );
 });
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -74,8 +76,41 @@ app.use(function (err, req, res, next) {
 // Imagenes estaticas
 app.use("/uploads", express.static('uploads'))
 
-app.listen(8080, () => {
+/*/app.listen(8080, () => {
   console.log("Server running in port 8080");
+});/*/
+
+const http = require("http");
+const server = http.createServer(app);
+const io = socketIo(server);
+
+let interval;
+
+io.on("connection", (socket) => {
+  console.log("New client connected");
+  if (interval) {
+    clearInterval(interval);
+  }
+  interval = setInterval(() => getApiAndEmit(socket), 3000);
+  socket.on("disconnect", () => {
+    console.log("Client disconnected");
+    clearInterval(interval);
+  });
 });
 
+const getApiAndEmit = async (socket) => {
+  console.log(socket.id);
+  const response = await Product.find({ status: "active" }).populate([
+    { path: 'email', model: 'Profile' },
+    { path: 'profile', model: 'Profile' }
+  ]);
+  //console.log("response...");
+  //console.log(await Product.find())
+  // Emitting a new message. Will be consumed by the client
+  io.emit("FromAPI", response);
+};
+
+
+
+server.listen(8080, () => console.log(`Listening on port 8080`));
 module.exports = app;
