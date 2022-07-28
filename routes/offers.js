@@ -79,35 +79,41 @@ router.post('/apply', validateSession(), async (req, res) => {
         delete productUpdate._id;
         //Se modifica la actividad a true para evitar que otros usuarios intenten ofertar.
         productUpdate.offerActivity = true;
-        let upd = await Product.updateOne({ _id: productId }, { $set: { offerActivity: true } });
+        let upd = await Product.updateOne({ _id: productId }, { $set: { offerActivity: true, userInOfferActivity: req.user.id } });
         console.log("Bloqueando producto");
         console.log(upd);
+        //En caso de que los jugadores se lleven milisegundos.
+        let productValidate = await Product.findById(productId);
+        if (productValidate.userInOfferActivity === req.user.id) {
+          //agregar offered a producto.
+          if (typeof req.body.product.price.offered === "undefined" || req.body.product.price.offered < offered) {
+            let dateLog = new Date();
+            let log = { date: dateLog, offered: offered, user: req.user.id };
+            let logPoints = { date: dateLog, decrement: offered, user: req.user.id, beforeDecrement: userPoints[0].pts, afterDecrement: (userPoints[0].pts - offered) };
+            productUpdate.price.offered = offered;
+            //let updOffered = await Product.updateOne({ _id: productId }, { $set: { "price.offered": offered } });
+            //Agregar log de offered a producto.
+            if (typeof productUpdate.price.logOffered === "undefined")
+              productUpdate.price.logOffered = [];
 
-        //agregar offered a producto.
-        if (typeof req.body.product.price.offered === "undefined" || req.body.product.price.offered < offered) {
-          let dateLog = new Date();
-          let log = { date: dateLog, offered: offered, user: req.user.id };
-          let logPoints = { date: dateLog, decrement: offered, user: req.user.id, beforeDecrement: userPoints[0].pts, afterDecrement: (userPoints[0].pts-offered) };
-          productUpdate.price.offered = offered;
-          //let updOffered = await Product.updateOne({ _id: productId }, { $set: { "price.offered": offered } });
-          //Agregar log de offered a producto.
-          if(typeof productUpdate.price.logOffered === "undefined") 
-            productUpdate.price.logOffered = [];
-            
-          productUpdate.price.logOffered.push(log)
-          //let updLogOffered = await Product.updateOne({ _id: productId }, { $set: { "price.logOffered": log } });
-          //Restar puntos y agregar log de decremento y actualizar BD
-          userPoints[0].pts -= offered;
-          userPoints[0].logsDecrement.push(logPoints);
-          let updDecrement = await Points.updateOne({_id: userPoints[0]._id}, {$set: userPoints[0]});
-          //Desbloqueando producto
-          productUpdate.offerActivity = false;
-          productUpdate.price.winOffered = req.user.id;
-          let upd = await Product.updateOne({ _id: productId }, { $set: productUpdate});
-           //Primer funcion
-          res.status(201).json({ status: 1, mssg: "La oferta se colocó exitosamente.", points: userPoints[0], product:productUpdate  });
-        } else {
-          res.status(201).json({ status: -1, mssg: "Tu oferta es menor a la última oferta del producto." });
+            productUpdate.price.logOffered.push(log)
+            //let updLogOffered = await Product.updateOne({ _id: productId }, { $set: { "price.logOffered": log } });
+            //Restar puntos y agregar log de decremento y actualizar BD
+            userPoints[0].pts -= offered;
+            userPoints[0].logsDecrement.push(logPoints);
+            let updDecrement = await Points.updateOne({ _id: userPoints[0]._id }, { $set: userPoints[0] });
+            //Desbloqueando producto
+            productUpdate.offerActivity = false;
+            productUpdate.price.winOffered = req.user.id;
+            let upd = await Product.updateOne({ _id: productId }, { $set: productUpdate });
+            //Primer funcion
+            res.status(201).json({ status: 1, mssg: "La oferta se colocó exitosamente.", points: userPoints[0], product: productUpdate });
+          } else {
+            res.status(201).json({ status: -1, mssg: "Tu oferta es menor a la última oferta del producto." });
+          }
+        }else{
+          console.log("Se esta ejecutando un cambio - Detected in update...");
+          res.status(201).json({ status: -1, mssg: "Hay alguien mas ofertando intenta mas tarde.." });
         }
       } else {
         //No permite el cambio
