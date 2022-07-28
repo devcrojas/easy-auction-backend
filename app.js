@@ -87,10 +87,11 @@ const io = socketIo(server);
 
 let interval;
 let intervalPoints;
+let conections = 0;
 
 io.on("connection", (socket) => {
-  
-  console.log("New client connected");
+  conections ++;
+  console.log("New client connected num connected: " + conections);
   if (interval) {
     clearInterval(interval);
   }
@@ -98,11 +99,12 @@ io.on("connection", (socket) => {
     console.log("limpiando interval");
     clearInterval(intervalPoints);
   }
-  interval = setInterval(() => getApiAndEmit(socket), 800);
+  interval = setInterval(() => getApiAndEmit(socket), 1000);
   //intervalPoints = setInterval(() => pointsSocket(socket), 2000);
   //pointsSocket();
   socket.on("disconnect", (reason) => {
-    console.log("Client disconnected" + reason);
+    conections --;
+    console.log("Client disconnected " + reason + " sobran: " + conections);
     clearInterval(interval);
     clearInterval(intervalPoints);
   });

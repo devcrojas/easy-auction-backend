@@ -48,6 +48,7 @@ const Product = new Schema({
         type: String
     },
     offerActivity: { type: Boolean, required: false },
+    userInOfferActivity: {type: String, required: false},
     profile: {
         type: String
     },
