@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const ProdSchema = new Schema({
+    _id: {type: String, required:true, ref: "Profile"},
     user: { type: String, required: false },
     pts: { type: Number, require: true },
     logsIncrement: {type: Array, required: true},
@@ -10,4 +11,4 @@ const ProdSchema = new Schema({
 },
 { versionKey: false });
 
-module.exports = mongoose.model('points', ProdSchema);
+module.exports = mongoose.model('Point', ProdSchema);

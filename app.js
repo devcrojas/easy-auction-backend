@@ -14,6 +14,7 @@ const mongoose = require('mongoose');
 var middlewareAuthClass = new middlewareAuth();
 const socketIo = require("socket.io");
 var Product = require("./model/product")
+var Points = require("./model/points")
 
 var app = express();
 
@@ -85,25 +86,47 @@ const server = http.createServer(app);
 const io = socketIo(server);
 
 let interval;
+let intervalPoints;
 
 io.on("connection", (socket) => {
+  
   console.log("New client connected");
   if (interval) {
     clearInterval(interval);
   }
-  interval = setInterval(() => getApiAndEmit(socket), 3000);
-  socket.on("disconnect", () => {
-    console.log("Client disconnected");
+  if (intervalPoints) {
+    console.log("limpiando interval");
+    clearInterval(intervalPoints);
+  }
+  //interval = setInterval(() => getApiAndEmit(socket), 800);
+  intervalPoints = setInterval(() => pointsSocket(socket), 2000);
+  //pointsSocket();
+  socket.on("disconnect", (reason) => {
+    console.log("Client disconnected" + reason);
     clearInterval(interval);
+    clearInterval(intervalPoints);
   });
 });
 
+const pointsSocket = async (socket)=>{
+  let data = await Points.find();
+  console.log(data);  
+
+  data.map((value, index) =>{
+    setTimeout(() => {
+      socket.emit("points-"+value._id, value);
+    }, 1000);
+  });
+}
+
+//pointsSocket();
 const getApiAndEmit = async (socket) => {
   console.log(socket.id);
+  //console.time()
   const response = await Product.find({ status: "active" }).populate([
-    { path: 'email', model: 'Profile' },
-    { path: 'profile', model: 'Profile' }
+    { path: 'profile', model: 'Profile'}
   ]);
+  //console.timeEnd()
   //console.log("response...");
   //console.log(await Product.find())
   // Emitting a new message. Will be consumed by the client
