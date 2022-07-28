@@ -31,7 +31,7 @@ validateSession = () => {
 
 
 // OBTENER UN SOLO perfil
-router.get('/:id', async (req, res) => {
+router.get('/:id', validateSession(), async (req, res) => {
   try {
     const getProfile = await Profile.findById(req.params.id);
     if (getProfile === null) {
@@ -47,7 +47,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // OBTENER TODOS los perfile
-router.get('/', async (req, res) => {
+router.get('/', validateSession(), async (req, res) => {
   try {
     const getProfiles = await Profile.find();
 
@@ -59,7 +59,7 @@ router.get('/', async (req, res) => {
 });
 
 // AGREGAR un nuevo perfil
-router.post('/', multer.upload.single('file'), async (req, res, next) => {
+router.post('/', validateSession(), multer.upload.single('file'), async (req, res, next) => {
   try {
     const profile = {
       _id: req.body.email,
@@ -114,7 +114,7 @@ router.post('/', multer.upload.single('file'), async (req, res, next) => {
   }
 });
 
-router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
+router.put('/:id', validateSession(), multer.upload.single('file'), async (req, res, next) => {
   try {
     //console.log(req.body);
     //console.log(user.profile);
@@ -142,7 +142,7 @@ router.put('/:id', multer.upload.single('file'), async (req, res, next) => {
 });
 
 // ACTUALIZAR imagen de perfil
-router.put('/image/:id', multer.upload.single('file'), async (req, res, next) => {
+router.put('/image/:id', validateSession(), multer.upload.single('file'), async (req, res, next) => {
   //console.log(req.file);
   if (req.file && req.file.originalname) {
     try {

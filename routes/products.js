@@ -235,8 +235,8 @@ router.put('/status/:id', validateSession(), async (req, res, next) => {
   }
 });
 
-// Actualizar fase y estatus de algun producto en ENTREGA
-router.put('/delivery/:id', validateSession(), async (req, res, next) => {
+/* // Actualizar fase y estatus de algun producto en ENTREGA
+router.put('/phaseproduct/:id', validateSession(), async (req, res, next) => {
   try{
     const updateDeliveryProduct = {
       status:req.body.status,
@@ -248,7 +248,7 @@ router.put('/delivery/:id', validateSession(), async (req, res, next) => {
     console.log(error);
     res.status(401).json({status: -1, mssg: error.message});
   }
-});
+}); */
 
 // ACTUALIZAR a nuevo producto
 router.put('/:id', validateSession(), fields, async (req, res, next) => {
