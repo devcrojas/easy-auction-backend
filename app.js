@@ -98,8 +98,8 @@ io.on("connection", (socket) => {
     console.log("limpiando interval");
     clearInterval(intervalPoints);
   }
-  //interval = setInterval(() => getApiAndEmit(socket), 800);
-  intervalPoints = setInterval(() => pointsSocket(socket), 2000);
+  interval = setInterval(() => getApiAndEmit(socket), 800);
+  //intervalPoints = setInterval(() => pointsSocket(socket), 2000);
   //pointsSocket();
   socket.on("disconnect", (reason) => {
     console.log("Client disconnected" + reason);
