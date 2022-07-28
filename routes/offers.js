@@ -72,7 +72,7 @@ router.post('/apply', validateSession(), async (req, res) => {
     let productUpdate = await Product.findById(productId);
     //Valida si tiene saldo suficiente...
     if (offered <= userPoints[0].pts) {
-      console.log("Saldo Suficiente");
+      //console.log("Saldo Suficiente");
       //Valida que elproducto no tenga actividad de otro usuario para evitar errores.
       if (typeof productUpdate.offerActivity === "undefined" || productUpdate.offerActivity === false) {
         //Preparando para update
@@ -81,7 +81,7 @@ router.post('/apply', validateSession(), async (req, res) => {
         productUpdate.offerActivity = true;
         let upd = await Product.updateOne({ _id: productId }, { $set: { offerActivity: true, userInOfferActivity: req.user.id } });
         console.log("Bloqueando producto");
-        console.log(upd);
+        //console.log(upd);
         //En caso de que los jugadores se lleven milisegundos.
         let productValidate = await Product.findById(productId);
         if (productValidate.userInOfferActivity === req.user.id) {
@@ -106,8 +106,21 @@ router.post('/apply', validateSession(), async (req, res) => {
             productUpdate.offerActivity = false;
             productUpdate.price.winOffered = req.user.id;
             let upd = await Product.updateOne({ _id: productId }, { $set: productUpdate });
+            //console.log();
+            if(typeof productValidate.price.logOffered !== "undefined" && parseInt(productValidate.price.logOffered.length) > 0 ){
+              //Se le devuelve al usuario que iba ganando su saldo.
+              let offeredBefore = productValidate.price.logOffered[productValidate.price.logOffered.length - 1];
+
+              let userBeforeOffered = await Points.aggregate([{ $match: { user: offeredBefore.user } }]);
+              userBeforeOffered[0].pts = userBeforeOffered[0].pts + offeredBefore.offered;
+              userBeforeOffered[0].logsIncrement.push({timestamp: new Date(), qty: offeredBefore.offered, qtyFinal: userBeforeOffered[0].pts, detailsPaypal:{type:"Rembolso"}});
+              delete userBeforeOffered[0]._id;
+              let updIncrement = await Points.updateOne({ _id: offeredBefore.user }, { $set: userBeforeOffered[0] });
+              console.log(updIncrement);
+              res.status(201).json({ status: 1, mssg: "La oferta se colocó exitosamente.", points: userPoints[0], product: productUpdate });
+            }
             //Primer funcion
-            res.status(201).json({ status: 1, mssg: "La oferta se colocó exitosamente.", points: userPoints[0], product: productUpdate });
+
           } else {
             res.status(201).json({ status: -1, mssg: "Tu oferta es menor a la última oferta del producto." });
           }

@@ -100,8 +100,7 @@ io.on("connection", (socket) => {
     clearInterval(intervalPoints);
   }
   interval = setInterval(() => getApiAndEmit(socket), 1000);
-  //intervalPoints = setInterval(() => pointsSocket(socket), 2000);
-  //pointsSocket();
+  intervalPoints = setInterval(() => pointsSocket(socket), 2000);
   socket.on("disconnect", (reason) => {
     conections --;
     console.log("Client disconnected " + reason + " sobran: " + conections);
@@ -112,12 +111,12 @@ io.on("connection", (socket) => {
 
 const pointsSocket = async (socket)=>{
   let data = await Points.find();
-  console.log(data);  
+  //console.log(data);  
 
   data.map((value, index) =>{
-    setTimeout(() => {
-      socket.emit("points-"+value._id, value);
-    }, 1000);
+    
+      io.emit("points-"+value._id, value);
+    
   });
 }
 
