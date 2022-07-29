@@ -37,8 +37,7 @@ router.get('/:id', async (req, res) => {
     if (getProfile === null) {
       res.status(200).json({ status: -1, mssg: 'Perfil no creado' });
     } else {
-      res.send(getProfile);
-      res.status(200).json({ status: 1, mssg: 'Perfil encontrado' });;
+      res.status(200).json({ status: 1, mssg: 'Perfil encontrado', perfil: getProfile });;
     }
   } catch (error) {
     console.log(error.message);
