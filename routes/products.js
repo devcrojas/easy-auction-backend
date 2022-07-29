@@ -106,10 +106,55 @@ router.post('/myproducts', validateSession(), async (req, res) => {
 });
 
 // Obtener los productos que gano o tiene el usuario
+router.post('/closeAuction', validateSession(), async (req, res) => {
+  try{
+    console.log(req.body);
+    var products = {}
+    products = await Product.findById(req.body._id);
+    await Product.updateOne({_id: req.body._id}, {$set: {offerActivity: true}});
+    //No hay ganador
+    //console.log(products);
+    //var productUpdate = products;
+    //console.log((typeof products.price === "undefined"));
+    //console.log((typeof req.body.price !== "undefined" && typeof req.body.price.winOffered === "undefined"));
+    console.log(products.price.winOffered);
+    if(typeof products.price.winOffered === "undefined"){
+      await Product.updateOne({_id: req.body._id}, {$set: {status: "inactive"}});
+    }else{
+      products.profileWin = products.price.winOffered;
+      products.status = "purchased";
+      products.phase = "";
+      await Product.updateOne({_id: req.body._id}, {$set: products});
+    }
+    //Se valida que la fecha de fin haya culminado,
+    //Si culmino, se hace update en profileWin, phase, status y se crea objeto con datos del ganador
+    res.status(200).send({status: 1, product: products});
+  }catch(error) {
+    console.log(error.message);
+    res.status(400).json({status: -1, mssg: error.message});
+}
+});
+
 router.post('/myearnedproducts', validateSession(), async (req, res) => {
   try{
     const getEarnedProducts = await Product.find({
       'profileWin': req.body.profileWin
+    }).populate([
+      {path: 'email', model: 'Profile'},
+      {path: 'profile', model: 'Profile'}
+    ]);
+    res.status(200).send(getEarnedProducts);
+  }catch(error) {
+    console.log(error.message);
+    res.status(400).json({status: -1, mssg: error.message});
+}
+});
+
+router.post('/getProductByStatus', validateSession(), async (req, res) => {
+  try{
+    const getEarnedProducts = await Product.find({
+      'status': req.body.status,
+      'phase' : {$ne : "delivered" }
     }).populate([
       {path: 'email', model: 'Profile'},
       {path: 'profile', model: 'Profile'}

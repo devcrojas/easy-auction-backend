@@ -1,6 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
+const Login = require('../model/login');
 
 const router = express.Router();
 
@@ -37,8 +38,7 @@ router.get('/:id', validateSession(), async (req, res) => {
     if (getProfile === null) {
       res.status(200).json({ status: -1, mssg: 'Perfil no creado' });
     } else {
-      res.send(getProfile);
-      res.status(200).json({ status: 1, mssg: 'Perfil encontrado' });;
+      res.status(200).json({ status: 1, mssg: 'Perfil encontrado', perfil: getProfile });;
     }
   } catch (error) {
     console.log(error.message);
@@ -168,13 +168,17 @@ router.put('/image/:id', validateSession(), multer.upload.single('file'), async 
       } /* else {
         console.log("Este usuario no tiene foto de perfil!");
       } */
-
-      res.status(201).send('Successfully Upgraded Image Profile!');
-
       const getProfile = await Profile.findById(req.params.id);
-      jwt.sign({ getProfile }, process.env.TOKEN_SECRET, (err, token) => {
-        res.json({ token })
-      });
+      let login = await Login.aggregate([{ $match: { email: req.params.id} }]);
+      const token = jwt.sign({
+        name: login[0].name,
+        id: login[0]._id,
+        date: new Date(),
+        profile: getProfile,
+        isAdmin: login[0].isAdmin
+      }, process.env.TOKEN_SECRET)
+      console.log(token)
+      res.status(201).json({ status: 1, token: token });
     } catch (error) {
       console.log(error.message);
       res.status(400).json({ status: -1, mssg: error.message });
