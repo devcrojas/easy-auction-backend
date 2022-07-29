@@ -53,6 +53,9 @@ const Product = new Schema({
     profile: {
         type: String
     },
+    review: {
+        type: String
+    },
     logAuthProd: {type: Object, required: false},
     profileWin: String
 },

@@ -235,6 +235,20 @@ router.put('/status/:id', validateSession(), async (req, res, next) => {
   }
 });
 
+// Actualizar campo review de algun producto
+router.put('/review/:id', validateSession(), async (req, res, next) => {
+  try{
+    const updateReviewProduct = {
+      review:req.body.review
+    };
+    let update = await Product.updateOne({_id : req.params.id} ,{ $set : updateReviewProduct});
+    res.status(200).json({ status: 1, mssg: 'Successfully Review Upgraded Product!', update: update } );
+  }catch(error) {
+    console.log(error);
+    res.status(401).json({status: -1, mssg: error.message});
+  }
+});
+
 /* // Actualizar fase y estatus de algun producto en ENTREGA
 router.put('/phaseproduct/:id', validateSession(), async (req, res, next) => {
   try{
