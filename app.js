@@ -99,8 +99,8 @@ io.on("connection", (socket) => {
     console.log("limpiando interval");
     clearInterval(intervalPoints);
   }
-  interval = setInterval(() => getApiAndEmit(socket), 1000);
-  intervalPoints = setInterval(() => pointsSocket(socket), 2000);
+  //interval = setInterval(() => getApiAndEmit(socket), 1000);
+  //intervalPoints = setInterval(() => pointsSocket(socket), 2000);
   socket.on("disconnect", (reason) => {
     conections --;
     console.log("Client disconnected " + reason + " sobran: " + conections);
