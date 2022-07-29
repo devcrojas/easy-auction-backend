@@ -7,7 +7,7 @@ const router = express.Router();
 const Product = require('../model/product');
 const Profile = require('../model/profile');
 // Service Multer
-const multer = require('../middleware/multerProducts')
+const multer = require('../middleware/multerProducts');
 
 // Fields
 const fields = multer.upload.fields([{ name: 'file', maxCount: 1 }, { name: 'files', maxCount: 5 }])
