@@ -59,7 +59,7 @@ router.get('/', validateSession(), async (req, res) => {
 });
 
 // AGREGAR un nuevo perfil
-router.post('/', validateSession(), multer.upload.single('file'), async (req, res, next) => {
+router.post('/', multer.upload.single('file'), async (req, res, next) => {
   try {
     const profile = {
       _id: req.body.email,

@@ -75,7 +75,7 @@ router.post("/login", async function (req, res, next) {
 
       if (login.length > 0) {
         let profile = await Profile.aggregate([{ $match: { _id: req.body.email } }]);
-        //console.log("consulta de perfil", profile);
+        console.log("consulta de perfil", profile);
         //console.log(login);
 
         // create token
