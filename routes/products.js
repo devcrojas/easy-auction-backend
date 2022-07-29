@@ -150,6 +150,22 @@ router.post('/myearnedproducts', validateSession(), async (req, res) => {
 }
 });
 
+router.post('/getProductByStatus', validateSession(), async (req, res) => {
+  try{
+    const getEarnedProducts = await Product.find({
+      'status': req.body.status,
+      'phase' : {$ne : "delivered" }
+    }).populate([
+      {path: 'email', model: 'Profile'},
+      {path: 'profile', model: 'Profile'}
+    ]);
+    res.status(200).send(getEarnedProducts);
+  }catch(error) {
+    console.log(error.message);
+    res.status(400).json({status: -1, mssg: error.message});
+}
+});
+
 // AGREGAR un nuevo producto
 router.post('/', validateSession(), fields, async (req, res, next) => {
   try{
