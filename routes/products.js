@@ -34,7 +34,7 @@ validateSession = () => {
 
 
 // OBTENER UN SOLO producto
-router.get('/:id', async (req, res) => {
+router.get('/:id', validateSession(), async (req, res) => {
   try {
     const getProduct = await Product.findById(req.params.id).populate([
       {path: 'email', model: 'Profile'},
@@ -106,7 +106,7 @@ router.post('/myproducts', validateSession(), async (req, res) => {
 });
 
 // Obtener los productos que gano o tiene el usuario
-router.post('/myearnedproducts', async (req, res) => {
+router.post('/myearnedproducts', validateSession(), async (req, res) => {
   try{
     const getEarnedProducts = await Product.find({
       'profileWin': req.body.profileWin
@@ -235,6 +235,20 @@ router.put('/status/:id', validateSession(), async (req, res, next) => {
   }
 });
 
+/* // Actualizar fase y estatus de algun producto en ENTREGA
+router.put('/phaseproduct/:id', validateSession(), async (req, res, next) => {
+  try{
+    const updateDeliveryProduct = {
+      status:req.body.status,
+      phase:req.body.phase
+    };
+    let update = await Product.updateOne({_id : req.params.id} ,{ $set : updateDeliveryProduct});
+    res.status(200).json({ status: 1, mssg: 'Successfully Phase Upgraded Product!', update: update } );
+  }catch(error) {
+    console.log(error);
+    res.status(401).json({status: -1, mssg: error.message});
+  }
+}); */
 
 // ACTUALIZAR a nuevo producto
 router.put('/:id', validateSession(), fields, async (req, res, next) => {
@@ -383,4 +397,4 @@ const fileSizeFormatter = (bytes, decimal) => {
 
 module.exports = router;
 
-/* FIN 1.59 */
+/* FIN 1.60 */

@@ -1,5 +1,5 @@
 const express = require('express');
-
+const jwt = require('jsonwebtoken');
 const router = express.Router();
 
 // Review Model
@@ -7,13 +7,33 @@ const Review = require('../model/review');
 const Profile = require('../model/profile');
 const Product = require('../model/product');
 
+// Validacion de sesion
+validateSession = () => {
+  return (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    if (authHeader) {
+      const token = authHeader.split(' ')[1];
+      jwt.verify(token, process.env.TOKEN_SECRET, (err, user) => {
+        if (err) {
+          return res.sendStatus(403);
+        }
+        //console.log(user);
+        req.user = user;
+        next();
+      });
+    } else {
+      res.sendStatus(401);
+    }
+  };
+}
+
 // OBTENER UN SOLO perfil
-router.get('/:id', async (req, res) => {
+router.get('/:id', validateSession(), async (req, res) => {
   try {
     const getReview = await Review.findById(req.params.id).populate([
-      {path: 'emailU', model: 'Profile'},
-      {path: 'emailP', model: 'Profile'},
-      {path: 'productId', model: 'Product'}
+      {path: 'userLog', model: 'Profile'},
+      {path: 'profile', model: 'Profile'},
+      {path: 'product', model: 'Product'}
     ]);
     res.status(200).send(getReview);
   } catch (error) {
@@ -23,12 +43,12 @@ router.get('/:id', async (req, res) => {
 });
 
 // OBTENER TODAS las reseñas
-router.get('/', async (req, res) => {
+router.get('/', validateSession(), async (req, res) => {
   try {
     const getReviews = await Review.find().populate([
-      {path: 'emailU', model: 'Profile'},
-      {path: 'emailP', model: 'Profile'},
-      {path: 'productId', model: 'Product'}
+      {path: 'userLog', model: 'Profile'},
+      {path: 'profile', model: 'Profile'},
+      {path: 'product', model: 'Product'}
     ]);
     res.status(200).send(getReviews);
   } catch (error) {
@@ -38,14 +58,14 @@ router.get('/', async (req, res) => {
 });
 
 // Obtener reseñas que hizo el usuario de la sesion
-router.post('/myreviews', async (req, res) => {
+router.post('/myreviews', validateSession(), async (req, res) => {
   try {
     const getMyReviews = await Review.find({
-      'emailU': req.body.emailU
+      'userLog': req.body.userLog
     }).populate([
-      {path: 'emailU', model: 'Profile', select: '_id'},
-      {path: 'emailP', model: 'Profile', select: '_id firstName lastName file'},
-      {path: 'productId', model: 'Product', select: '_id nameProduct file'}
+      {path: 'userLog', model: 'Profile', select: '_id'},
+      {path: 'profile', model: 'Profile', select: '_id firstName lastName file'},
+      {path: 'product', model: 'Product', select: '_id nameProduct file'}
     ]);
     res.status(200).send(getMyReviews);
   } catch (error) {
@@ -55,10 +75,10 @@ router.post('/myreviews', async (req, res) => {
 });
 
 // AGREGAR reseña
-router.post('/', async (req, res) => {
+router.post('/', validateSession(), async (req, res) => {
   //console.log(req.body);
   try {
-    //let userObject = await Profile.aggregate([{ $match: { _id: req.body.emailU } }]);
+    //let userObject = await Profile.aggregate([{ $match: { _id: req.body.userLog } }]);
     //let profileObject = await Profile.aggregate([{ $match: { email: req.body.profile }]);
     //let products = await Product.find();
     //let productObject = products.filter((prod) => {return prod._id == req.body.product});
@@ -67,9 +87,10 @@ router.post('/', async (req, res) => {
       comment:req.body.comment,
       type:req.body.type,
       stars:req.body.stars,
-      emailU:req.body.emailU,
-      emailP:req.body.emailP,
-      productId:req.body.productId
+      userLog:req.body.userLog,
+      profile:req.body.profile,
+      product:req.body.product,
+      status:req.body.status
     };
   
     const addReviews = new Review(review);
@@ -84,7 +105,7 @@ router.post('/', async (req, res) => {
 });
 
 // ACTUALIZAR una nueva reseña 
-router.put('/:id', async (req, res) => {
+router.put('/:id', validateSession(), async (req, res) => {
   try {
     //let userObject = await Profile.aggregate([{ $match: { email: req.body.userSession } }]);
     //let profileObject = await Profile.aggregate([{ $match: { email: req.body.profile } }]);
@@ -107,7 +128,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // Actualizar campo status de alguna reseña
-router.put('/status/:id', async (req, res, next) => {
+router.put('/status/:id', validateSession(), async (req, res, next) => {
   try{
     const updateStatusReview = {
       status:req.body.status
@@ -121,7 +142,7 @@ router.put('/status/:id', async (req, res, next) => {
 });
 
 // ELIMINAR reseña
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', validateSession(), async (req, res) => {
   try {
     await Review.findByIdAndRemove(req.params.id);
     res.status(200).send('Review Deleted');
@@ -146,4 +167,4 @@ const fileSizeFormatter = (bytes, decimal) => {
 }
 
 module.exports = router;
-/* FIN 1.2 */
+/* FIN 1.3 */
