@@ -106,6 +106,20 @@ router.post('/myproducts', validateSession(), async (req, res) => {
 });
 
 // Obtener los productos que gano o tiene el usuario
+router.post('/closeAuction', validateSession(), async (req, res) => {
+  try{
+    const products = await Product.find({
+      '_id': req.body.productId
+    });
+    //Se valida que la fecha de fin haya culminado,
+    //Si culmino, se hace update en profileWin, phase, status y se crea objeto con datos del ganador
+    res.status(200).send(getEarnedProducts);
+  }catch(error) {
+    console.log(error.message);
+    res.status(400).json({status: -1, mssg: error.message});
+}
+});
+
 router.post('/myearnedproducts', validateSession(), async (req, res) => {
   try{
     const getEarnedProducts = await Product.find({
