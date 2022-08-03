@@ -58,7 +58,7 @@ router.get('/', validateSession(), async (req, res) => {
   }
 });
 
-// AGREGAR un nuevo perfil
+// CREACION de un nuevo perfil. Se crea a partir del registro, por ello no se agrega JWT*
 router.post('/', multer.upload.single('file'), async (req, res, next) => {
   try {
     const profile = {
