@@ -255,9 +255,10 @@ router.put('/auctionauth/:id', validateSession(), async (req, res, next) => {
     }} });
     console.log(logProdAuth);
     /* console.log({
+      "status":req.body.status,
       "admin": req.body.adminAuth,
-      "dateAccept": req.body.auctionDate.acceptance,
-      "dateInit": productAuth.auctionDate.initialD
+      "dateStatus": dateAuthProd,
+      "dateInit": dateAuthProd
     }); */
     res.status(200).json({ status: 1, mssg: 'Authorized Product!', update: updateAuth } );
   }catch(error) {
@@ -456,4 +457,4 @@ const fileSizeFormatter = (bytes, decimal) => {
 
 module.exports = router;
 
-/* FIN 1.60 */
+/* FIN 1.61 */
