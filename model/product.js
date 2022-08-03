@@ -54,7 +54,7 @@ const Product = new Schema({
         type: String
     },
     review: {
-        type: String
+        type: Boolean
     },
     logAuthProd: {type: Object, required: false},
     profileWin: String
@@ -63,4 +63,4 @@ const Product = new Schema({
 
 module.exports = mongoose.model('Product', Product);
 
-/* FIN 1.51 */
+/* FIN 1.52 */
